@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:pickerv2/models/Choice.dart';
 import 'package:pickerv2/models/Choicesoperation.dart';
-import 'package:pickerv2/screens/Edit_Screen.dart';
 import 'package:pickerv2/screens/Picker_Screen.dart';
-import 'package:pickerv2/screens/add_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'Saved_Choices.dart';
  class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -14,59 +14,66 @@ import 'package:provider/provider.dart';
 
 class _HomeScreenState extends State<HomeScreen> {
     bool ontapselect=false;
-   @override
+    final Low_Choices = SnackBar(
+    content: Text('Please add more choices',style: GoogleFonts.roboto(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.red,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20),
+        ),
+        ),
+    );
+    final Home_Screen_Help = SnackBar(
+      content: Text('''Add choices Screen -Help
+      
+to delete choices tap and hold to select and then use the delete icon on the top right
+
+Swipe down to dismiss
+      ''',style: GoogleFonts.roboto(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.grey,
+      duration: Duration(seconds: 20),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20),
+        ),
+      ),
+    );
+    final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+
+    @override
+  void initState() {
+      Provider.of<ChoicesOperation>(context,listen: false).CreateDB();
+      print('object created');
+  }
+
+
+  @override
    Widget build(BuildContext context) {
      return Scaffold(
+       key: _scaffoldKey,
        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-       floatingActionButton: FloatingActionButton(
-         onPressed: (){
-           Navigator.push(context, MaterialPageRoute(builder: (context)=>  Roulette(Provider.of<ChoicesOperation>(context,listen: false).ToLabels())));
-         },
-         child: Icon(
-           Icons.arrow_right,
-           size:40,
-           color: Colors.blue[900],
-         ),
-         backgroundColor: Theme.of(context).backgroundColor,
-       ),
+       floatingActionButton: Floating_Button(context),
 
-       appBar: Provider.of<ChoicesOperation>(context,listen: false).SelectedExist()==true?SelectedAppBar(context):NormalAppBar(),
+       appBar: Provider.of<ChoicesOperation>(context,listen: false).SelectedExist(Provider.of<ChoicesOperation>(context,listen: false).getChoices)==true?SelectedAppBar(context):NormalAppBar(),
 
       body: Column(
+
         children: <Widget>[
+
         InputChoice(),
 
           Expanded(
             child: Consumer<ChoicesOperation>(
                 //child: InputChoice(),
                 builder: (context,ChoicesOperation data,child){
-                return ListView.builder(
-                  itemCount: data.getChoices.length,
-                  itemBuilder: (context,index){
-                    return GestureDetector(
-                      onTap:  (){
-                        ontapselect==true?setState(() {
-                          Provider.of<ChoicesOperation>(context,listen: false).Selected(index);
-                        }):{};
-                      },
-                      onLongPress: (){
-                      setState(() {
-                        Provider.of<ChoicesOperation>(context,listen: false).Selected(index);
-                        ontapselect=true;
-                      });
-                    },
-                        child: Column(
-                          crossAxisAlignment:CrossAxisAlignment.stretch,
-                          children: [
-                            //index==0?InputChoice():Container(),
-                            ChoicesCard(data.getChoices[index]),
-                          ],
-                        ),
-
-                    );
-
+                return ListView.separated(
+                    padding: const EdgeInsets.all(15),
+                    itemCount: data.getChoices.length,
+                    separatorBuilder: (BuildContext context, int index) => Divider(),
+                    itemBuilder: (context,index){
+                    return Choice_Card(context, index, data);
                   }
-
                 );
 
               }
@@ -77,24 +84,73 @@ class _HomeScreenState extends State<HomeScreen> {
      );
    }
 
+  FloatingActionButton Floating_Button(BuildContext context) {
+    return FloatingActionButton(
+       onPressed: (){
+         if(Provider.of<ChoicesOperation>(context,listen: false).getChoices.length<2){
+           _scaffoldKey.currentState.removeCurrentSnackBar();
+           _scaffoldKey.currentState.showSnackBar(Low_Choices);
+         }else {
+           _scaffoldKey.currentState.removeCurrentSnackBar();
+           Provider.of<ChoicesOperation>(context, listen: false).Save_Choices();
+           Navigator.push(context, MaterialPageRoute(builder: (context) =>
+               Roulette(Provider.of<ChoicesOperation>(context, listen: false)
+                   .ToLabels())));
+         }
+         },
+       child: Icon(
+         Icons.arrow_right,
+         size:50,
+         color: Theme.of(context).brightness==Brightness.light?Theme.of(context).buttonColor:Colors.white,
+       ),
+       backgroundColor: Theme.of(context).brightness==Brightness.light?Colors.white:Colors.black,
+     );
+  }
+
+
+
    PreferredSize NormalAppBar() {
-     if(Provider.of<ChoicesOperation>(context,listen: false).NumSelected()==0){ontapselect=false;}
+     if(Provider.of<ChoicesOperation>(context,listen: false).NumSelected(Provider.of<ChoicesOperation>(context,listen: false).getChoices)==0){ontapselect=false;}
      return PreferredSize(
        preferredSize: const Size(double.infinity, kToolbarHeight),
        child: AppBar(
-         title: Text("Choice Picker" ),
+         iconTheme: Theme.of(context).iconTheme,
+         leading: IconButton(
+           icon: Icon(Icons.help,size: 40,),
+           onPressed: () {
+             _scaffoldKey.currentState.removeCurrentSnackBar();
+             _scaffoldKey.currentState.showSnackBar(Home_Screen_Help);},
+         ),
+         title: Text("Choice Picker" ,style:GoogleFonts.roboto(   fontSize: 24,
+             color: Theme.of(context).brightness==Brightness.light?Theme.of(context).accentColor:Colors.white,
+         ),),
          centerTitle: true,
          elevation: 0,
          backgroundColor: Colors.transparent,
+         actions: [
+           IconButton(icon:Icon(Icons.star,size: 40,),
+               onPressed: (){
+                 setState(() {
+                   Provider.of<ChoicesOperation>(context,listen: false).Save_Choices();
+                   Navigator.push(context, MaterialPageRoute(builder: (context)=>  Saved_Choices_Screen()));
+                 });
+               })
+         ],
        ),
+
      );
    }
 
    PreferredSize SelectedAppBar(BuildContext context) {
-     int selected=Provider.of<ChoicesOperation>(context,listen: false).NumSelected();
+     int selected=Provider.of<ChoicesOperation>(context,listen: false).NumSelected(Provider.of<ChoicesOperation>(context,listen: false).getChoices);
      return PreferredSize(
+
        preferredSize: const Size(double.infinity, kToolbarHeight),
        child: AppBar(
+       leading: IconButton(
+       icon: Icon(Icons.select_all),
+       onPressed: () => setState(() {Provider.of<ChoicesOperation>(context,listen: false).Select_All(Provider.of<ChoicesOperation>(context,listen: false).getChoices);}),
+       ),
          title: Text("Selected :"+selected.toString()),
          centerTitle: true,
          elevation: 0,
@@ -104,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: (){
                   setState(() {
                     Provider.of<ChoicesOperation>(context, listen: false)
-                        .DeleteSelected();
+                        .DeleteSelected(Provider.of<ChoicesOperation>(context,listen: false).getChoices);
                     ontapselect=false;
                   });
                 })
@@ -113,6 +169,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
      );
    }
+    Material Choice_Card(BuildContext context, int index, ChoicesOperation data) {
+      return Material(
+        elevation: 10,
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(15),
+          splashColor: Colors.blue,
+          highlightColor: Colors.red,
+          onTap:  (){
+            if(ontapselect==true){setState(() {
+              Provider.of<ChoicesOperation>(context,listen: false).Selected(Provider.of<ChoicesOperation>(context,listen: false).getChoices,index);
+            });}
+          },
+          onLongPress: (){
+            setState(() {
+              Provider.of<ChoicesOperation>(context,listen: false).Selected(Provider.of<ChoicesOperation>(context,listen: false).getChoices,index);
+              ontapselect=true;
+            });
+          },
+          child: Column(
+            crossAxisAlignment:CrossAxisAlignment.stretch,
+            children: [
+              //index==0?InputChoice():Container(),
+              ChoicesCard(data.getChoices[index]),
+            ],
+          ),
+
+        ),
+      );
+    }
 }
 
 class ChoicesCard extends StatelessWidget {
@@ -123,18 +209,10 @@ class ChoicesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(15),
-      padding: EdgeInsets.all(15),
-      height: 100,
+    return Ink(
+
+      padding: EdgeInsets.all(25),
       decoration: BoxDecoration(
-        boxShadow: [
-        BoxShadow(
-        color: Colors.black,
-        offset: Offset(0.0, 0.0), //(x,y)
-        blurRadius: 6.0,
-      ),
-      ],
         color: choice.Selected==0?Theme.of(context).backgroundColor:Colors.redAccent,
         borderRadius: BorderRadius.circular(15)
       ),
@@ -144,8 +222,8 @@ class ChoicesCard extends StatelessWidget {
           SizedBox(height: 5,),
           Text(
             choice.description,
-            style:TextStyle(fontSize: 24,
-            color:choice.Selected==0?Colors.blueAccent:Colors.black,
+            style:GoogleFonts.roboto(fontSize: 24,
+            color:choice.Selected==0?Theme.of(context).textTheme.bodyText1.color:Colors.black,
           ),
           )
         ],
@@ -184,10 +262,11 @@ class _InputChoiceState extends State<InputChoice> {
             BoxShadow(
               color: Colors.black,
               offset: Offset(0.0, 0.0), //(x,y)
-              blurRadius: 6.0,
+              blurRadius: 2.0,
+
             ),
           ],
-          color: Theme.of(context).backgroundColor,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(15)
       ),
       child: Column(
@@ -203,7 +282,7 @@ class _InputChoiceState extends State<InputChoice> {
             validator: validate,
             controller: txt,
             decoration: InputDecoration(
-              errorStyle: TextStyle(
+              errorStyle: GoogleFonts.roboto(
                 fontSize: 15,
               ),
               errorBorder: OutlineInputBorder(
@@ -214,16 +293,16 @@ class _InputChoiceState extends State<InputChoice> {
               ),
               border: InputBorder.none,
               hintText: 'Enter Choice',
-              hintStyle:TextStyle(   fontSize: 24,
-                  color: Colors.blueAccent
+              hintStyle:GoogleFonts.roboto(   fontSize: 24,
+                  color: Theme.of(context).textTheme.bodyText1.color,
               ),
-              labelText: 'Choice',labelStyle:TextStyle(fontSize: 18,
-              color: Colors.blueAccent,
+              labelText: 'Choice',labelStyle:GoogleFonts.roboto(fontSize: 18,
+              color: Theme.of(context).textTheme.bodyText1.color,
             ),
 
             ),
-            style:TextStyle(   fontSize: 24,
-                color: Colors.blueAccent
+            style:GoogleFonts.roboto(   fontSize: 24,
+                color: Theme.of(context).textTheme.bodyText1.color
             ),
 
             onChanged: (value){
@@ -236,15 +315,18 @@ class _InputChoiceState extends State<InputChoice> {
           Align(
             alignment: Alignment.centerRight,
             child: FlatButton(
+                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10)),
               onPressed: (){
                 done();},
-              color: Theme.of(context).scaffoldBackgroundColor,
+              color:Theme.of(context).brightness==Brightness.light?Theme.of(context).buttonColor:Colors.white,
               child: Text('Add Choice',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white
+                style:GoogleFonts.roboto(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).brightness==Brightness.light?Colors.white:Colors.black,
+
                 ),),
+
             ),
           )
 

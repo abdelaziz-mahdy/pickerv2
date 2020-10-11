@@ -14,19 +14,18 @@ class MyApp extends StatelessWidget {
       create: (context)=> ChoicesOperation(),
       child: MaterialApp(
         darkTheme: ThemeData.dark(),
+        theme: ThemeData(
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: Colors.blue[900],
+          backgroundColor: Colors.white,
+          cardColor: Colors.white,
+          buttonColor: Colors.blue[900],
+          iconTheme: IconThemeData(color: Colors.white),
+          //accent color for the bar and other text
+          accentColor: Colors.white,
 
-          theme:ThemeData(
-            // Define the default brightness and colors.
-            brightness: Brightness.dark,
-            scaffoldBackgroundColor: Colors.blue[900],
-            backgroundColor: Colors.white,
-            selectedRowColor: Colors.grey,
-            // Define the default font family.
-            // Define the default TextTheme. Use this to specify the default
-            // text styling for headlines, titles, bodies of text, and more.
-
-          ),
-        home:HomeScreen(),
+        ),
+        home:new HomeScreen(),
       ),
     );
   }
