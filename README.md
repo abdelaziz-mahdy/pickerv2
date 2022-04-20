@@ -1,6 +1,6 @@
 # pickerv2
 
-A new Flutter project.
+Flutter app: to pick a choose randomly from multiple choices
 
 ## Getting Started
 
