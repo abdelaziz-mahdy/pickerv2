@@ -14,17 +14,7 @@ class MyApp extends StatelessWidget {
       create: (context)=> ChoicesOperation(),
       child: MaterialApp(
         darkTheme: ThemeData.dark(),
-        theme: ThemeData(
-          brightness: Brightness.light,
-          scaffoldBackgroundColor: Colors.blue[900],
-          backgroundColor: Colors.white,
-          cardColor: Colors.white,
-          buttonColor: Colors.blue[900],
-          iconTheme: IconThemeData(color: Colors.white),
-          //accent color for the bar and other text
-          accentColor: Colors.white,
-
-        ),
+        theme: ThemeData.light(),
         home:new HomeScreen(),
       ),
     );

@@ -4,8 +4,8 @@ import 'package:pickerv2/models/Choice.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ChoicesOperation extends ChangeNotifier{
-  List<Choice> _choices = new List<Choice>();
-  List<Choice> _DBchoices = new List<Choice>();
+  List<Choice> _choices = [];
+  List<Choice> _DBchoices = [];
   int select_all_state=1;
   List<Choice> get getChoices{
     return _choices;
@@ -106,7 +106,7 @@ class ChoicesOperation extends ChangeNotifier{
   //database values
   String DatabaseName="Choices_database.db";
   String TableName="Choices";
-  Future<Database> database;
+  late Future<Database> database;
   //create the DB+Get refrence for it
 
   Future<void> CreateDB() async {
@@ -130,7 +130,7 @@ class ChoicesOperation extends ChangeNotifier{
   }
   Future<void> deleteDBChoices(String choice) async {
     final db = await database;
-    List<String> values=new List<String>();
+    List<String> values=[];
     values.add(choice);
     await db.delete(
         TableName,
@@ -178,7 +178,7 @@ class ChoicesOperation extends ChangeNotifier{
   }
   List<Choice> DBChoicesToList(String DBChoices){
     List<String> choices=DBChoices.split(',');
-    List<Choice> choices_return=new List<Choice>();
+    List<Choice> choices_return=[];
     choices_return.clear();
     for(int i=0;i<choices.length;i++){
       choices_return.add(Choice(choices[i]));
@@ -186,7 +186,7 @@ class ChoicesOperation extends ChangeNotifier{
     return choices_return;
   }
   String ListToDBChoices(List<Choice> ListOfChoices){
-    List<String>ListOfDescription=new List<String>();
+    List<String>ListOfDescription=[];
     for(int i=0;i<ListOfChoices.length;i++){
       ListOfDescription.add(ListOfChoices[i].description);
     }
