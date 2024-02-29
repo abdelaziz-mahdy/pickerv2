@@ -1,16 +1,10 @@
-import 'dart:typed_data';
 
-import 'package:community_charts_flutter/community_charts_flutter.dart'
-    as charts;
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'dart:async';
 import 'dart:math';
-import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:random_color/random_color.dart';
-import 'dart:ui' as ui;
 
 class Roulette extends StatefulWidget {
   final Map<int, String> labels;
@@ -23,19 +17,33 @@ class Roulette extends StatefulWidget {
 
 class _RouletteState extends State<Roulette> {
   final StreamController _dividerController = StreamController<int>();
-  bool notloaded = true;
-  final _wheelNotifier = StreamController<double>();
-  var chartimage;
+  StreamController<int> controller = StreamController<int>.broadcast();
+  final List<Color> colors = [];
   dispose() {
     _dividerController.close();
-    _wheelNotifier.close();
     super.dispose();
   }
 
   RandomColor _randomColor = RandomColor();
 
+  @override
+  void initState() {
+    for (int i = 0; i < widget.labels.keys.length; i++) {
+      colors.add(get_random_color());
+    }
+    // TODO: implement initState
+    super.initState();
+  }
+
   Color get_random_color() {
     return _randomColor.randomColor(colorBrightness: ColorBrightness.random);
+  }
+
+  void handleRoll() {
+    // Generate a random number from 0 to widget.labels.keys.length - 1
+    int randomIndex = Random().nextInt(widget.labels.keys.length);
+    // Add the random number to the stream
+    controller.add(randomIndex);
   }
 
   @override
@@ -56,52 +64,48 @@ class _RouletteState extends State<Roulette> {
           ),
         ),
       ),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              height: 200,
+              height: MediaQuery.of(context).size.height * 0.4,
               child: FortuneWheel(
+                selected: controller.stream,
+                animateFirst: false,
                 items: [
                   for (var i in widget.labels.entries)
                     FortuneItem(
                         child: Text(
-                      i.value,
-                    ))
+                          i.value,
+                        ),
+                        style: FortuneItemStyle(
+                          color: colors[i.key - 1],
+                        ))
                 ],
+                onFocusItemChanged: (value) => _dividerController.add(value),
               ),
             ),
             SizedBox(height: 10),
             StreamBuilder(
-              stream: _dividerController.stream,
-              builder: (context, snapshot) => snapshot.hasData
-                  ? RouletteScore(snapshot.data, widget.labels)
-                  : Container(),
-            ),
+                stream: _dividerController.stream,
+                builder: (context, snapshot) {
+                  return snapshot.hasData
+                      ? RouletteScore(snapshot.data!, widget.labels)
+                      : Container();
+                }),
             SizedBox(height: 10),
             ElevatedButton(
               child: Text(
                 'Roll',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
               ),
-              onPressed: () =>
-                  _wheelNotifier.sink.add(_generateRandomVelocity()),
+              onPressed: handleRoll,
             )
           ],
         ),
       ),
     );
   }
-
-  double _generateRandomVelocity() => (Random().nextDouble() * 6000) + 15000;
-
-  double _generateRandomAngle() => Random().nextDouble() * pi * 2;
 }
 
 class RouletteScore extends StatelessWidget {
@@ -112,29 +116,10 @@ class RouletteScore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('${labels[selected]}',
+    return Text('${labels[selected + 1]}',
         style: TextStyle(
           fontStyle: FontStyle.italic,
           fontSize: 24.0,
-          color: Theme.of(context).brightness == Brightness.light
-              ? Theme.of(context).colorScheme.secondary
-              : Colors.white,
         ));
   }
-}
-
-class circleWheel extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return CircularMenu(items: []);
-  }
-}
-
-class ChartChoice {
-  final String choicetext;
-  final int share;
-  final charts.Color color;
-  ChartChoice(this.choicetext, this.share, Color color)
-      : this.color = charts.Color(
-            r: color.red, g: color.green, b: color.blue, a: color.alpha);
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
-import 'package:pickerv2/models/Choice.dart';
+import 'package:pickerv2/models/choice.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ChoicesOperation extends ChangeNotifier{
