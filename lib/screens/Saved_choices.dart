@@ -20,8 +20,7 @@ to delete choices tap and hold to select (Same as add choices screen) and then u
 
 Swipe down to dismiss
       ''',
-      style: GoogleFonts.roboto(
-          fontSize: 20, fontWeight: FontWeight.bold),
+      style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
     ),
     behavior: SnackBarBehavior.floating,
     backgroundColor: Colors.grey,
@@ -36,6 +35,7 @@ Swipe down to dismiss
 
   @override
   void initState() {
+    super.initState();
     Provider.of<ChoicesOperation>(context, listen: false).ReadDB();
   }
 

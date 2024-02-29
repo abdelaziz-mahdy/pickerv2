@@ -66,14 +66,17 @@ class EditScreen extends StatelessWidget {
                       ),
                       border: InputBorder.none,
                       hintText: 'Enter Choice',
-                      hintStyle: TextStyle(fontSize: 24, ),
+                      hintStyle: TextStyle(
+                        fontSize: 24,
+                      ),
                       labelText: 'Choice',
                       labelStyle: TextStyle(
                         fontSize: 18,
-                        
                       ),
                     ),
-                    style: TextStyle(fontSize: 24, ),
+                    style: TextStyle(
+                      fontSize: 24,
+                    ),
                   ),
                 ),
                 Row(

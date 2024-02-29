@@ -50,6 +50,7 @@ Swipe down to dismiss
 
   @override
   void initState() {
+    super.initState();
     Provider.of<ChoicesOperation>(context, listen: false).CreateDB();
     print('object created');
   }
