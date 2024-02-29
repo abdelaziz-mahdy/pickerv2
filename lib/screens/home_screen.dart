@@ -17,8 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final Low_Choices = SnackBar(
     content: Text(
       'Please add more choices',
-      style: GoogleFonts.roboto(
-          color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+      style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
     ),
     behavior: SnackBarBehavior.floating,
     backgroundColor: Colors.red,
@@ -36,8 +35,7 @@ to delete choices tap and hold to select and then use the delete icon on the top
 
 Swipe down to dismiss
       ''',
-      style: GoogleFonts.roboto(
-          color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+      style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
     ),
     behavior: SnackBarBehavior.floating,
     backgroundColor: Colors.grey,
@@ -373,9 +371,6 @@ class _InputChoiceState extends State<InputChoice> {
                 style: GoogleFonts.roboto(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.white
-                      : Colors.black,
                 ),
               ),
             ),

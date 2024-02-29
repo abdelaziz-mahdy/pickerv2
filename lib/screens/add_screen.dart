@@ -62,14 +62,17 @@ class _AddScreenState extends State<AddScreen> {
                       ),
                       border: InputBorder.none,
                       hintText: 'Enter Choice',
-                      hintStyle: TextStyle(fontSize: 24, color: Colors.white),
+                      hintStyle: TextStyle(
+                        fontSize: 24,
+                      ),
                       labelText: 'Choice',
                       labelStyle: TextStyle(
                         fontSize: 18,
-                        color: Colors.white,
                       ),
                     ),
-                    style: TextStyle(fontSize: 24, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 24,
+                    ),
                     onChanged: (value) {
                       DescriptionText = value;
                     },
@@ -82,9 +85,9 @@ class _AddScreenState extends State<AddScreen> {
                   child: Text(
                     'Add Choice',
                     style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.lightBlue),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 )
               ],

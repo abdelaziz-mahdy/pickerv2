@@ -21,7 +21,7 @@ to delete choices tap and hold to select (Same as add choices screen) and then u
 Swipe down to dismiss
       ''',
       style: GoogleFonts.roboto(
-          color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          fontSize: 20, fontWeight: FontWeight.bold),
     ),
     behavior: SnackBarBehavior.floating,
     backgroundColor: Colors.grey,
