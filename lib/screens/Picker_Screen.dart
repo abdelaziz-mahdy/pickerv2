@@ -57,9 +57,7 @@ class _RouletteState extends State<Roulette> {
           'Test Your Luck',
           style: GoogleFonts.roboto(
             fontSize: 24,
-            color: Theme.of(context).brightness == Brightness.light
-                ? Theme.of(context).colorScheme.secondary
-                : Colors.white,
+
           ),
         ),
       ),
