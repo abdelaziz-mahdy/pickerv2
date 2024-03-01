@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:pickerv2/models/Choice.dart';
-import 'package:pickerv2/models/Choicesoperation.dart';
+import 'package:pickerv2/models/choice.dart';
+import 'package:pickerv2/models/choices_operation.dart';
 import 'package:provider/provider.dart';
 import 'package:form_validator/form_validator.dart';
-class EditScreen extends StatelessWidget{
+
+class EditScreen extends StatelessWidget {
   final Choice choice;
   final int index;
-  EditScreen(this.choice,this.index);
+  EditScreen(this.choice, this.index);
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController Description=TextEditingController();
-    Description.text=choice.description;
+    TextEditingController Description = TextEditingController();
+    Description.text = choice.description;
     final FocusScopeNode _node = FocusScopeNode();
-    final validate = ValidationBuilder().minLength(1, 'Length < 1 😟').maxLength(1500).build();
+    final validate = ValidationBuilder()
+        .minLength(1, 'Length < 1 😟')
+        .maxLength(1500)
+        .build();
     GlobalKey<FormState> _form = GlobalKey();
-    void done(){
-      if(_form.currentState.validate()) {
+    void done() {
+      if (_form.currentState!.validate()) {
         Provider.of<ChoicesOperation>(context, listen: false)
             .EditChoice(Description.text, index);
 
         Navigator.pop(context);
       }
     }
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -44,9 +49,10 @@ class EditScreen extends StatelessWidget{
                   child: TextFormField(
                     autofocus: true,
                     textInputAction: TextInputAction.done,
-                    onEditingComplete: (){done();},
+                    onEditingComplete: () {
+                      done();
+                    },
                     validator: validate,
-
                     controller: Description,
                     decoration: InputDecoration(
                       errorStyle: TextStyle(
@@ -60,53 +66,52 @@ class EditScreen extends StatelessWidget{
                       ),
                       border: InputBorder.none,
                       hintText: 'Enter Choice',
-                      hintStyle:TextStyle(   fontSize: 24,
-                          color: Colors.white
+                      hintStyle: TextStyle(
+                        fontSize: 24,
                       ),
-
-                      labelText: 'Choice',labelStyle:TextStyle(fontSize: 18,
-                      color: Colors.white,
+                      labelText: 'Choice',
+                      labelStyle: TextStyle(
+                        fontSize: 18,
+                      ),
                     ),
-
-                    ),
-                    style:TextStyle(   fontSize: 24,
-                        color: Colors.white
+                    style: TextStyle(
+                      fontSize: 24,
                     ),
                   ),
                 ),
-
-               Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    FlatButton(
-                      onPressed: (){done();},
-                      color: Colors.white,
-                      child: Text('Save Choice',
+                    ElevatedButton(
+                      onPressed: () {
+                        done();
+                      },
+                      child: Text(
+                        'Save Choice',
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.lightBlue
-                        ),),
+                            color: Colors.lightBlue),
+                      ),
                     ),
-                    FlatButton(
-                      onPressed: (){
-
-                        Provider.of<ChoicesOperation>(context,listen: false).deleteChoice(choice.description);
+                    ElevatedButton(
+                      onPressed: () {
+                        Provider.of<ChoicesOperation>(context, listen: false)
+                            .deleteChoice(choice.description);
 
                         Navigator.pop(context);
                       },
-                      color: Colors.white,
-                      child: Text('Delete Choice',
+                      child: Text(
+                        'Delete Choice',
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.red
-                        ),),
+                            color: Colors.red),
+                      ),
                     ),
                   ],
                 )
               ],
-
             ),
           ),
         ),
