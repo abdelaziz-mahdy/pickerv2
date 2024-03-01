@@ -4,20 +4,22 @@ import 'package:provider/provider.dart';
 import 'package:form_validator/form_validator.dart';
 
 class AddScreen extends StatefulWidget {
+  const AddScreen({super.key});
+
   @override
   State<AddScreen> createState() => _AddScreenState();
 }
 
 class _AddScreenState extends State<AddScreen> {
-  String DescriptionText = "";
+  String descriptionText = "";
   final FocusScopeNode _node = FocusScopeNode();
   final validate =
       ValidationBuilder().minLength(1, 'Length < 1 😟').maxLength(1500).build();
-  GlobalKey<FormState> _form = GlobalKey();
+  final GlobalKey<FormState> _form = GlobalKey();
   void done() {
     if (_form.currentState!.validate()) {
       Provider.of<ChoicesOperation>(context, listen: false)
-          .addNewChoice(DescriptionText);
+          .addNewChoice(descriptionText);
 
       Navigator.pop(context);
     }
@@ -28,7 +30,7 @@ class _AddScreenState extends State<AddScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text("AddChoice"),
+        title: const Text("AddChoice"),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -50,7 +52,7 @@ class _AddScreenState extends State<AddScreen> {
                       done();
                     },
                     validator: validate,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       errorStyle: TextStyle(
                         fontSize: 18,
                       ),
@@ -70,11 +72,11 @@ class _AddScreenState extends State<AddScreen> {
                         fontSize: 18,
                       ),
                     ),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                     ),
                     onChanged: (value) {
-                      DescriptionText = value;
+                      descriptionText = value;
                     },
                   ),
                 ),
@@ -82,7 +84,7 @@ class _AddScreenState extends State<AddScreen> {
                   onPressed: () {
                     done();
                   },
-                  child: Text(
+                  child: const Text(
                     'Add Choice',
                     style: TextStyle(
                       fontSize: 20,

@@ -3,14 +3,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pickerv2/models/choices_operation.dart';
 import 'package:provider/provider.dart';
 
-class Saved_Choices_Screen extends StatefulWidget {
+class SavedChoicesScreen extends StatefulWidget {
+  const SavedChoicesScreen({super.key});
+
   @override
-  _Saved_Choices_ScreenState createState() => _Saved_Choices_ScreenState();
+  _SavedChoicesScreenState createState() => _SavedChoicesScreenState();
 }
 
-class _Saved_Choices_ScreenState extends State<Saved_Choices_Screen> {
-  bool ontapselect = false;
-  final Saved_Screen_Help = SnackBar(
+class _SavedChoicesScreenState extends State<SavedChoicesScreen> {
+  bool onTapSelect = false;
+  final savedScreenHelp = SnackBar(
     content: Text(
       '''Saved choices Screen -Help
 
@@ -24,8 +26,8 @@ Swipe down to dismiss
     ),
     behavior: SnackBarBehavior.floating,
     backgroundColor: Colors.grey,
-    duration: Duration(seconds: 20),
-    shape: RoundedRectangleBorder(
+    duration: const Duration(seconds: 20),
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
         Radius.circular(20),
       ),
@@ -45,11 +47,11 @@ Swipe down to dismiss
       key: _scaffoldKey_Saved,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: Provider.of<ChoicesOperation>(context, listen: false)
-                  .SelectedExist(
+                  .selectedExist(
                       Provider.of<ChoicesOperation>(context, listen: false)
                           .getDBChoices) ==
               true
-          ? SelectedAppBar(context)
+          ? selectedAppBar(context)
           : NormalAppBar(),
       body: Column(
         children: <Widget>[
@@ -59,15 +61,15 @@ Swipe down to dismiss
                 builder: (context, ChoicesOperation data, child) {
               return ListView.separated(
                   padding: const EdgeInsets.all(15),
-                  itemCount: data.getDBChoices.length == 0
+                  itemCount: data.getDBChoices.isEmpty
                       ? 1
                       : data.getDBChoices.length,
                   separatorBuilder: (BuildContext context, int index) =>
-                      Divider(),
+                      const Divider(),
                   itemBuilder: (context, index) {
-                    return data.getDBChoices.length == 0
+                    return data.getDBChoices.isEmpty
                         ? Add_Saved_Choices()
-                        : Choice_Card(context, index, data);
+                        : choiceCard(context, index, data);
                   });
             }),
           ),
@@ -76,7 +78,7 @@ Swipe down to dismiss
     );
   }
 
-  Material Choice_Card(BuildContext context, int index, ChoicesOperation data) {
+  Material choiceCard(BuildContext context, int index, ChoicesOperation data) {
     return Material(
       elevation: 20,
       color: Colors.transparent,
@@ -85,9 +87,9 @@ Swipe down to dismiss
         splashColor: Colors.blue,
         highlightColor: Colors.red,
         onTap: () {
-          if (ontapselect == true) {
+          if (onTapSelect == true) {
             setState(() {
-              Provider.of<ChoicesOperation>(context, listen: false).Selected(
+              Provider.of<ChoicesOperation>(context, listen: false).selected(
                   Provider.of<ChoicesOperation>(context, listen: false)
                       .getDBChoices,
                   index);
@@ -100,15 +102,15 @@ Swipe down to dismiss
         },
         onLongPress: () {
           setState(() {
-            Provider.of<ChoicesOperation>(context, listen: false).Selected(
+            Provider.of<ChoicesOperation>(context, listen: false).selected(
                 Provider.of<ChoicesOperation>(context, listen: false)
                     .getDBChoices,
                 index);
-            ontapselect = true;
+            onTapSelect = true;
           });
         },
         child: Ink(
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
             color: data.getDBChoices[index].Selected == 0
                 ? Theme.of(context).colorScheme.background
@@ -118,7 +120,7 @@ Swipe down to dismiss
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               Text(
@@ -145,14 +147,14 @@ Swipe down to dismiss
         splashColor: Colors.blue,
         highlightColor: Colors.red,
         child: Container(
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.background,
               borderRadius: BorderRadius.circular(15)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               Text(
@@ -169,11 +171,11 @@ Swipe down to dismiss
   }
 
   PreferredSize NormalAppBar() {
-    if (Provider.of<ChoicesOperation>(context, listen: false).NumSelected(
+    if (Provider.of<ChoicesOperation>(context, listen: false).numSelected(
             Provider.of<ChoicesOperation>(context, listen: false)
                 .getDBChoices) ==
         0) {
-      ontapselect = false;
+      onTapSelect = false;
     }
     return PreferredSize(
       preferredSize: const Size(double.infinity, kToolbarHeight),
@@ -197,7 +199,7 @@ Swipe down to dismiss
                 size: 40, color: Theme.of(context).iconTheme.color),
             onPressed: () {
               ScaffoldMessenger.of(context).removeCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(Saved_Screen_Help);
+              ScaffoldMessenger.of(context).showSnackBar(savedScreenHelp);
             },
           ),
         ],
@@ -205,35 +207,35 @@ Swipe down to dismiss
     );
   }
 
-  PreferredSize SelectedAppBar(BuildContext context) {
+  PreferredSize selectedAppBar(BuildContext context) {
     int selected = Provider.of<ChoicesOperation>(context, listen: false)
-        .NumSelected(
+        .numSelected(
             Provider.of<ChoicesOperation>(context, listen: false).getDBChoices);
     return PreferredSize(
       preferredSize: const Size(double.infinity, kToolbarHeight),
       child: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.select_all),
+          icon: const Icon(Icons.select_all),
           onPressed: () => setState(() {
             Provider.of<ChoicesOperation>(context, listen: false).Select_All(
                 Provider.of<ChoicesOperation>(context, listen: false)
                     .getDBChoices);
           }),
         ),
-        title: Text("Selected :" + selected.toString()),
+        title: Text("Selected :$selected"),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.red,
         actions: [
           IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () {
                 setState(() {
                   Provider.of<ChoicesOperation>(context, listen: false)
                       .DeleteSelected(
                           Provider.of<ChoicesOperation>(context, listen: false)
                               .getDBChoices);
-                  ontapselect = false;
+                  onTapSelect = false;
                 });
               })
         ],

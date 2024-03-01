@@ -8,7 +8,7 @@ import 'package:random_color/random_color.dart';
 class Roulette extends StatefulWidget {
   final Map<int, String> labels;
 
-  Roulette(this.labels);
+  const Roulette(this.labels, {super.key});
 
   @override
   _RouletteState createState() => _RouletteState();
@@ -25,7 +25,7 @@ class _RouletteState extends State<Roulette> {
     super.dispose();
   }
 
-  RandomColor _randomColor = RandomColor();
+  final RandomColor _randomColor = RandomColor();
 
   @override
   void initState() {
@@ -96,22 +96,22 @@ class _RouletteState extends State<Roulette> {
                 onFling: () => handleRoll(),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ValueListenableBuilder(
                 valueListenable: selected,
                 builder: (context, value, child) {
-                  print("selected" + value.toString());
+                  print("selected$value");
                   return RouletteScore(value, widget.labels);
                 }),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ValueListenableBuilder(
               valueListenable: animating,
               builder: (context, value, child) {
                 return ElevatedButton(
-                  child: Text(
+                  onPressed: value ? null : handleRoll,
+                  child: const Text(
                     'Roll',
                   ),
-                  onPressed: value ? null : handleRoll,
                 );
               },
             )
@@ -126,12 +126,12 @@ class RouletteScore extends StatelessWidget {
   final int selected;
   final Map<int, String> labels;
 
-  RouletteScore(this.selected, this.labels);
+  const RouletteScore(this.selected, this.labels, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Text('${labels[selected + 1]}',
-        style: TextStyle(
+        style: const TextStyle(
           fontStyle: FontStyle.italic,
           fontSize: 24.0,
         ));

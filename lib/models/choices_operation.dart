@@ -5,14 +5,14 @@ import 'package:sqflite/sqflite.dart';
 
 class ChoicesOperation extends ChangeNotifier {
   List<Choice> _choices = [];
-  List<Choice> _DBchoices = [];
-  int select_all_state = 1;
+  List<Choice> dBChoices = [];
+  int selectAllState = 1;
   List<Choice> get getChoices {
     return _choices;
   }
 
   List<Choice> get getDBChoices {
-    return _DBchoices;
+    return dBChoices;
   }
 
   void addNewChoice(String description) {
@@ -21,14 +21,14 @@ class ChoicesOperation extends ChangeNotifier {
     notifyListeners();
   }
 
-  void Selected(var Choices_List, int index) {
-    Choices_List[index].toggleSelected();
+  void selected(var choicesList, int index) {
+    choicesList[index].toggleSelected();
     notifyListeners();
   }
 
-  bool SelectedExist(var Choices_List) {
-    for (int i = 0; i < Choices_List.length; i++) {
-      if (Choices_List[i].Selected == 1) {
+  bool selectedExist(var choicesList) {
+    for (int i = 0; i < choicesList.length; i++) {
+      if (choicesList[i].Selected == 1) {
         print(true);
         return true;
       }
@@ -37,10 +37,10 @@ class ChoicesOperation extends ChangeNotifier {
     return false;
   }
 
-  int NumSelected(var Choices_List) {
+  int numSelected(var choicesList) {
     int selected = 0;
-    for (int i = 0; i < Choices_List.length; i++) {
-      if (Choices_List[i].Selected == 1) {
+    for (int i = 0; i < choicesList.length; i++) {
+      if (choicesList[i].Selected == 1) {
         selected++;
       }
     }
@@ -48,37 +48,37 @@ class ChoicesOperation extends ChangeNotifier {
     return selected;
   }
 
-  void SetNewChoices(String Choices_List) {
-    _choices = DBChoicesToList(Choices_List);
+  void SetNewChoices(String choicesList) {
+    _choices = DBChoicesToList(choicesList);
     notifyListeners();
   }
 
-  void DeleteSelected(var Choices_List) {
+  void DeleteSelected(var choicesList) {
     var toRemove = [];
-    Choices_List.forEach((element) {
+    choicesList.forEach((element) {
       if (element.Selected == 1) {
         toRemove.add(element);
       }
     });
-    Choices_List.removeWhere((item) => toRemove.contains(item));
+    choicesList.removeWhere((item) => toRemove.contains(item));
     //deleteDBChoices
-    toRemove.forEach((element) {
+    for (var element in toRemove) {
       deleteDBChoices(element.description);
-    });
-    select_all_state = 1;
+    }
+    selectAllState = 1;
     ReadDB();
     //UpdateDB(); need to update the database
     notifyListeners();
   }
 
-  void Select_All(var Choices_List) {
-    if (NumSelected(Choices_List) == Choices_List.length) {
-      for (int i = 0; i < Choices_List.length; i++) {
-        Choices_List[i].Selected = 0;
+  void Select_All(var choicesList) {
+    if (numSelected(choicesList) == choicesList.length) {
+      for (int i = 0; i < choicesList.length; i++) {
+        choicesList[i].Selected = 0;
       }
     } else {
-      for (int i = 0; i < Choices_List.length; i++) {
-        Choices_List[i].Selected = 1;
+      for (int i = 0; i < choicesList.length; i++) {
+        choicesList[i].Selected = 1;
       }
     }
     notifyListeners();
@@ -106,11 +106,11 @@ class ChoicesOperation extends ChangeNotifier {
   }
 
   void Save_Choices() {
-    if (_choices.length >= 1) {
-      _DBchoices.add(Choice(ListToDBChoices(_choices)));
-      _DBchoices.forEach((element) {
+    if (_choices.isNotEmpty) {
+      dBChoices.add(Choice(ListToDBChoices(_choices)));
+      for (var element in dBChoices) {
         print(element.description);
-      });
+      }
       UpdateDB();
       notifyListeners();
     }
@@ -161,7 +161,7 @@ class ChoicesOperation extends ChangeNotifier {
     // `conflictAlgorithm` to use in case the same dog is inserted twice.
     //
     // In this case, replace any previous data.
-    _DBchoices.forEach((element) async {
+    dBChoices.forEach((element) async {
       await db.insert(
         TableName,
         element.toMap(),
@@ -178,8 +178,8 @@ class ChoicesOperation extends ChangeNotifier {
     final List<Map<String, dynamic>> maps = await db.query(TableName);
 
     // Convert the List<Map<String, dynamic> into a List<Note>.
-    _DBchoices.clear();
-    _DBchoices = List.generate(maps.length, (i) {
+    dBChoices.clear();
+    dBChoices = List.generate(maps.length, (i) {
       return Choice(
         maps[i]['Description'],
       );
@@ -189,12 +189,12 @@ class ChoicesOperation extends ChangeNotifier {
 
   List<Choice> DBChoicesToList(String DBChoices) {
     List<String> choices = DBChoices.split(',');
-    List<Choice> choices_return = [];
-    choices_return.clear();
+    List<Choice> choicesReturn = [];
+    choicesReturn.clear();
     for (int i = 0; i < choices.length; i++) {
-      choices_return.add(Choice(choices[i]));
+      choicesReturn.add(Choice(choices[i]));
     }
-    return choices_return;
+    return choicesReturn;
   }
 
   String ListToDBChoices(List<Choice> ListOfChoices) {

@@ -7,20 +7,20 @@ import 'package:form_validator/form_validator.dart';
 class EditScreen extends StatelessWidget {
   final Choice choice;
   final int index;
-  EditScreen(this.choice, this.index);
+  const EditScreen(this.choice, this.index, {super.key});
 
   @override
   Widget build(BuildContext context) {
     TextEditingController Description = TextEditingController();
     Description.text = choice.description;
-    final FocusScopeNode _node = FocusScopeNode();
+    final FocusScopeNode node = FocusScopeNode();
     final validate = ValidationBuilder()
         .minLength(1, 'Length < 1 😟')
         .maxLength(1500)
         .build();
-    GlobalKey<FormState> _form = GlobalKey();
+    GlobalKey<FormState> form = GlobalKey();
     void done() {
-      if (_form.currentState!.validate()) {
+      if (form.currentState!.validate()) {
         Provider.of<ChoicesOperation>(context, listen: false)
             .EditChoice(Description.text, index);
 
@@ -31,7 +31,7 @@ class EditScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text("EditChoice"),
+        title: const Text("EditChoice"),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -39,9 +39,9 @@ class EditScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: Form(
-          key: _form,
+          key: form,
           child: FocusScope(
-            node: _node,
+            node: node,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -54,7 +54,7 @@ class EditScreen extends StatelessWidget {
                     },
                     validator: validate,
                     controller: Description,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       errorStyle: TextStyle(
                         fontSize: 18,
                       ),
@@ -74,7 +74,7 @@ class EditScreen extends StatelessWidget {
                         fontSize: 18,
                       ),
                     ),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                     ),
                   ),
@@ -86,7 +86,7 @@ class EditScreen extends StatelessWidget {
                       onPressed: () {
                         done();
                       },
-                      child: Text(
+                      child: const Text(
                         'Save Choice',
                         style: TextStyle(
                             fontSize: 20,
@@ -101,7 +101,7 @@ class EditScreen extends StatelessWidget {
 
                         Navigator.pop(context);
                       },
-                      child: Text(
+                      child: const Text(
                         'Delete Choice',
                         style: TextStyle(
                             fontSize: 20,

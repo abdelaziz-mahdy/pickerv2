@@ -11,7 +11,7 @@ class Choice {
 
   // ignore: non_constant_identifier_names
   void Print() {
-    print("description " + description);
+    print("description $description");
   }
 
   void toggleSelected() {

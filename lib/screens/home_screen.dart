@@ -8,26 +8,28 @@ import 'package:google_fonts/google_fonts.dart';
 import 'Saved_Choices.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool ontapselect = false;
-  final Low_Choices = SnackBar(
+  bool onTapSelect = false;
+  final lowChoices = SnackBar(
     content: Text(
       'Please add more choices',
       style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
     ),
     behavior: SnackBarBehavior.floating,
     backgroundColor: Colors.red,
-    shape: RoundedRectangleBorder(
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
         Radius.circular(20),
       ),
     ),
   );
-  final Home_Screen_Help = SnackBar(
+  final homeScreenHelp = SnackBar(
     content: Text(
       '''Add choices Screen -Help
       
@@ -39,8 +41,8 @@ Swipe down to dismiss
     ),
     behavior: SnackBarBehavior.floating,
     backgroundColor: Colors.grey,
-    duration: Duration(seconds: 20),
-    shape: RoundedRectangleBorder(
+    duration: const Duration(seconds: 20),
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
         Radius.circular(20),
       ),
@@ -62,15 +64,15 @@ Swipe down to dismiss
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       floatingActionButton: Floating_Button(context),
       appBar: Provider.of<ChoicesOperation>(context, listen: false)
-                  .SelectedExist(
+                  .selectedExist(
                       Provider.of<ChoicesOperation>(context, listen: false)
                           .getChoices) ==
               true
-          ? SelectedAppBar(context)
+          ? selectedAppBar(context)
           : NormalAppBar(),
       body: Column(
         children: <Widget>[
-          InputChoice(),
+          const InputChoice(),
           Expanded(
             child: Consumer<ChoicesOperation>(
                 //child: InputChoice(),
@@ -79,9 +81,9 @@ Swipe down to dismiss
                   padding: const EdgeInsets.all(15),
                   itemCount: data.getChoices.length,
                   separatorBuilder: (BuildContext context, int index) =>
-                      Divider(),
+                      const Divider(),
                   itemBuilder: (context, index) {
-                    return Choice_Card(context, index, data);
+                    return choiceCard(context, index, data);
                   });
             }),
           ),
@@ -98,7 +100,7 @@ Swipe down to dismiss
                 .length <
             2) {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(Low_Choices);
+          ScaffoldMessenger.of(context).showSnackBar(lowChoices);
         } else {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
           Provider.of<ChoicesOperation>(context, listen: false).Save_Choices();
@@ -110,7 +112,7 @@ Swipe down to dismiss
                           .ToLabels())));
         }
       },
-      child: Icon(
+      child: const Icon(
         Icons.arrow_right,
         size: 50,
       ),
@@ -118,23 +120,23 @@ Swipe down to dismiss
   }
 
   PreferredSize NormalAppBar() {
-    if (Provider.of<ChoicesOperation>(context, listen: false).NumSelected(
+    if (Provider.of<ChoicesOperation>(context, listen: false).numSelected(
             Provider.of<ChoicesOperation>(context, listen: false).getChoices) ==
         0) {
-      ontapselect = false;
+      onTapSelect = false;
     }
     return PreferredSize(
       preferredSize: const Size(double.infinity, kToolbarHeight),
       child: AppBar(
         iconTheme: Theme.of(context).iconTheme,
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.help,
             size: 40,
           ),
           onPressed: () {
             ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(Home_Screen_Help);
+            ScaffoldMessenger.of(context).showSnackBar(homeScreenHelp);
           },
         ),
         title: Text(
@@ -151,7 +153,7 @@ Swipe down to dismiss
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.star,
                 size: 40,
               ),
@@ -170,35 +172,35 @@ Swipe down to dismiss
     );
   }
 
-  PreferredSize SelectedAppBar(BuildContext context) {
+  PreferredSize selectedAppBar(BuildContext context) {
     int selected = Provider.of<ChoicesOperation>(context, listen: false)
-        .NumSelected(
+        .numSelected(
             Provider.of<ChoicesOperation>(context, listen: false).getChoices);
     return PreferredSize(
       preferredSize: const Size(double.infinity, kToolbarHeight),
       child: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.select_all),
+          icon: const Icon(Icons.select_all),
           onPressed: () => setState(() {
             Provider.of<ChoicesOperation>(context, listen: false).Select_All(
                 Provider.of<ChoicesOperation>(context, listen: false)
                     .getChoices);
           }),
         ),
-        title: Text("Selected :" + selected.toString()),
+        title: Text("Selected :$selected"),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.red,
         actions: [
           IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () {
                 setState(() {
                   Provider.of<ChoicesOperation>(context, listen: false)
                       .DeleteSelected(
                           Provider.of<ChoicesOperation>(context, listen: false)
                               .getChoices);
-                  ontapselect = false;
+                  onTapSelect = false;
                 });
               })
         ],
@@ -206,7 +208,7 @@ Swipe down to dismiss
     );
   }
 
-  Material Choice_Card(BuildContext context, int index, ChoicesOperation data) {
+  Material choiceCard(BuildContext context, int index, ChoicesOperation data) {
     return Material(
       elevation: 10,
       color: Colors.transparent,
@@ -215,9 +217,9 @@ Swipe down to dismiss
         splashColor: Colors.blue,
         highlightColor: Colors.red,
         onTap: () {
-          if (ontapselect == true) {
+          if (onTapSelect == true) {
             setState(() {
-              Provider.of<ChoicesOperation>(context, listen: false).Selected(
+              Provider.of<ChoicesOperation>(context, listen: false).selected(
                   Provider.of<ChoicesOperation>(context, listen: false)
                       .getChoices,
                   index);
@@ -226,11 +228,11 @@ Swipe down to dismiss
         },
         onLongPress: () {
           setState(() {
-            Provider.of<ChoicesOperation>(context, listen: false).Selected(
+            Provider.of<ChoicesOperation>(context, listen: false).selected(
                 Provider.of<ChoicesOperation>(context, listen: false)
                     .getChoices,
                 index);
-            ontapselect = true;
+            onTapSelect = true;
           });
         },
         child: Column(
@@ -248,12 +250,12 @@ Swipe down to dismiss
 class ChoicesCard extends StatelessWidget {
   final Choice choice;
 
-  ChoicesCard(this.choice);
+  const ChoicesCard(this.choice, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Ink(
-      padding: EdgeInsets.all(25),
+      padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
           color: choice.Selected == 0
               ? Theme.of(context).colorScheme.background
@@ -262,7 +264,7 @@ class ChoicesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           Text(
@@ -281,17 +283,19 @@ class ChoicesCard extends StatelessWidget {
 }
 
 class InputChoice extends StatefulWidget {
+  const InputChoice({super.key});
+
   @override
   _InputChoiceState createState() => _InputChoiceState();
 }
 
 class _InputChoiceState extends State<InputChoice> {
   String DescriptionText = "";
-  TextEditingController txt = new TextEditingController();
+  TextEditingController txt = TextEditingController();
   final validate =
       ValidationBuilder().minLength(1, 'Length < 1 😟').maxLength(1500).build();
 
-  GlobalKey<FormState> _form = GlobalKey();
+  final GlobalKey<FormState> _form = GlobalKey();
 
   void done() {
     if (_form.currentState!.validate()) {
@@ -304,10 +308,10 @@ class _InputChoiceState extends State<InputChoice> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(15),
-      padding: EdgeInsets.all(15),
+      margin: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black,
               offset: Offset(0.0, 0.0), //(x,y)
@@ -334,10 +338,10 @@ class _InputChoiceState extends State<InputChoice> {
                   errorStyle: GoogleFonts.roboto(
                     fontSize: 15,
                   ),
-                  errorBorder: OutlineInputBorder(
+                  errorBorder: const OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.red, width: 2.0),
                   ),
-                  focusedErrorBorder: OutlineInputBorder(
+                  focusedErrorBorder: const OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.red, width: 2.0),
                   ),
                   border: InputBorder.none,
