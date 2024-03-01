@@ -30,13 +30,13 @@ class _RouletteState extends State<Roulette> {
   @override
   void initState() {
     for (int i = 0; i < widget.labels.keys.length; i++) {
-      colors.add(get_random_color());
+      colors.add(getRandomColor());
     }
     // TODO: implement initState
     super.initState();
   }
 
-  Color get_random_color() {
+  Color getRandomColor() {
     return _randomColor.randomColor(colorBrightness: ColorBrightness.random);
   }
 
@@ -49,7 +49,6 @@ class _RouletteState extends State<Roulette> {
 
   @override
   Widget build(BuildContext context) {
-    print("build called");
     return Scaffold(
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
@@ -100,7 +99,6 @@ class _RouletteState extends State<Roulette> {
             ValueListenableBuilder(
                 valueListenable: selected,
                 builder: (context, value, child) {
-                  print("selected$value");
                   return RouletteScore(value, widget.labels);
                 }),
             const SizedBox(height: 10),

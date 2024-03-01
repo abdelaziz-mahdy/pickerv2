@@ -1,6 +1,6 @@
 class Choice {
   String description;
-  int Selected = 0;
+  int selected = 0;
   Choice(this.description);
 
   Map<String, dynamic> toMap() {
@@ -15,8 +15,8 @@ class Choice {
   }
 
   void toggleSelected() {
-    Selected++;
-    Selected = Selected % 2;
-    print(Selected);
+    selected++;
+    selected = selected % 2;
+    print(selected);
   }
 }

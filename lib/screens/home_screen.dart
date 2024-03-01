@@ -3,9 +3,9 @@ import 'package:form_validator/form_validator.dart';
 import 'package:pickerv2/models/choice.dart';
 import 'package:pickerv2/models/choices_operation.dart';
 import 'package:pickerv2/screens/picker_screen.dart';
+import 'package:pickerv2/screens/saved_choices.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'Saved_Choices.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -53,8 +53,7 @@ Swipe down to dismiss
   @override
   void initState() {
     super.initState();
-    Provider.of<ChoicesOperation>(context, listen: false).CreateDB();
-    print('object created');
+    Provider.of<ChoicesOperation>(context, listen: false).createDB();
   }
 
   @override
@@ -62,14 +61,14 @@ Swipe down to dismiss
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      floatingActionButton: Floating_Button(context),
+      floatingActionButton: floatingButton(context),
       appBar: Provider.of<ChoicesOperation>(context, listen: false)
                   .selectedExist(
                       Provider.of<ChoicesOperation>(context, listen: false)
                           .getChoices) ==
               true
           ? selectedAppBar(context)
-          : NormalAppBar(),
+          : normalAppBar(),
       body: Column(
         children: <Widget>[
           const InputChoice(),
@@ -92,7 +91,7 @@ Swipe down to dismiss
     );
   }
 
-  FloatingActionButton Floating_Button(BuildContext context) {
+  FloatingActionButton floatingButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
         if (Provider.of<ChoicesOperation>(context, listen: false)
@@ -103,7 +102,7 @@ Swipe down to dismiss
           ScaffoldMessenger.of(context).showSnackBar(lowChoices);
         } else {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          Provider.of<ChoicesOperation>(context, listen: false).Save_Choices();
+          Provider.of<ChoicesOperation>(context, listen: false).saveChoices();
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -119,7 +118,7 @@ Swipe down to dismiss
     );
   }
 
-  PreferredSize NormalAppBar() {
+  PreferredSize normalAppBar() {
     if (Provider.of<ChoicesOperation>(context, listen: false).numSelected(
             Provider.of<ChoicesOperation>(context, listen: false).getChoices) ==
         0) {
@@ -160,11 +159,11 @@ Swipe down to dismiss
               onPressed: () {
                 setState(() {
                   Provider.of<ChoicesOperation>(context, listen: false)
-                      .Save_Choices();
+                      .saveChoices();
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => Saved_Choices_Screen()));
+                          builder: (context) => const SavedChoicesScreen()));
                 });
               })
         ],
@@ -182,7 +181,7 @@ Swipe down to dismiss
         leading: IconButton(
           icon: const Icon(Icons.select_all),
           onPressed: () => setState(() {
-            Provider.of<ChoicesOperation>(context, listen: false).Select_All(
+            Provider.of<ChoicesOperation>(context, listen: false).selectAll(
                 Provider.of<ChoicesOperation>(context, listen: false)
                     .getChoices);
           }),
@@ -197,7 +196,7 @@ Swipe down to dismiss
               onPressed: () {
                 setState(() {
                   Provider.of<ChoicesOperation>(context, listen: false)
-                      .DeleteSelected(
+                      .deleteSelected(
                           Provider.of<ChoicesOperation>(context, listen: false)
                               .getChoices);
                   onTapSelect = false;
@@ -257,7 +256,7 @@ class ChoicesCard extends StatelessWidget {
     return Ink(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-          color: choice.Selected == 0
+          color: choice.selected == 0
               ? Theme.of(context).colorScheme.background
               : Colors.redAccent,
           borderRadius: BorderRadius.circular(15)),
@@ -271,7 +270,7 @@ class ChoicesCard extends StatelessWidget {
             choice.description,
             style: GoogleFonts.roboto(
               fontSize: 24,
-              color: choice.Selected == 0
+              color: choice.selected == 0
                   ? Theme.of(context).textTheme.bodyLarge?.color
                   : Colors.black,
             ),
@@ -290,7 +289,7 @@ class InputChoice extends StatefulWidget {
 }
 
 class _InputChoiceState extends State<InputChoice> {
-  String DescriptionText = "";
+  String descriptionText = "";
   TextEditingController txt = TextEditingController();
   final validate =
       ValidationBuilder().minLength(1, 'Length < 1 😟').maxLength(1500).build();
@@ -300,7 +299,7 @@ class _InputChoiceState extends State<InputChoice> {
   void done() {
     if (_form.currentState!.validate()) {
       Provider.of<ChoicesOperation>(context, listen: false)
-          .addNewChoice(DescriptionText);
+          .addNewChoice(descriptionText);
       txt.text = "";
     }
   }
@@ -360,7 +359,7 @@ class _InputChoiceState extends State<InputChoice> {
                     fontSize: 24,
                     color: Theme.of(context).textTheme.bodyLarge?.color),
                 onChanged: (value) {
-                  DescriptionText = value;
+                  descriptionText = value;
                 },
               ),
             ),

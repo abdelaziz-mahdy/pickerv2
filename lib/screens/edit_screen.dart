@@ -11,8 +11,8 @@ class EditScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController Description = TextEditingController();
-    Description.text = choice.description;
+    TextEditingController descriptionController = TextEditingController();
+    descriptionController.text = choice.description;
     final FocusScopeNode node = FocusScopeNode();
     final validate = ValidationBuilder()
         .minLength(1, 'Length < 1 😟')
@@ -22,7 +22,7 @@ class EditScreen extends StatelessWidget {
     void done() {
       if (form.currentState!.validate()) {
         Provider.of<ChoicesOperation>(context, listen: false)
-            .EditChoice(Description.text, index);
+            .editChoice(descriptionController.text, index);
 
         Navigator.pop(context);
       }
@@ -53,7 +53,7 @@ class EditScreen extends StatelessWidget {
                       done();
                     },
                     validator: validate,
-                    controller: Description,
+                    controller: descriptionController,
                     decoration: const InputDecoration(
                       errorStyle: TextStyle(
                         fontSize: 18,

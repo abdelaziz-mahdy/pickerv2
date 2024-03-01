@@ -48,12 +48,12 @@ class ChoicesOperation extends ChangeNotifier {
     return selected;
   }
 
-  void SetNewChoices(String choicesList) {
-    _choices = DBChoicesToList(choicesList);
+  void setNewChoices(String choicesList) {
+    _choices = dBChoicesToList(choicesList);
     notifyListeners();
   }
 
-  void DeleteSelected(var choicesList) {
+  void deleteSelected(var choicesList) {
     var toRemove = [];
     choicesList.forEach((element) {
       if (element.Selected == 1) {
@@ -66,12 +66,12 @@ class ChoicesOperation extends ChangeNotifier {
       deleteDBChoices(element.description);
     }
     selectAllState = 1;
-    ReadDB();
+    readDB();
     //UpdateDB(); need to update the database
     notifyListeners();
   }
 
-  void Select_All(var choicesList) {
+  void selectAll(var choicesList) {
     if (numSelected(choicesList) == choicesList.length) {
       for (int i = 0; i < choicesList.length; i++) {
         choicesList[i].Selected = 0;
@@ -84,7 +84,7 @@ class ChoicesOperation extends ChangeNotifier {
     notifyListeners();
   }
 
-  void EditChoice(String description, int index) {
+  void editChoice(String description, int index) {
     Choice choice = Choice(description);
     _choices[index] = choice;
     notifyListeners();
@@ -105,29 +105,29 @@ class ChoicesOperation extends ChangeNotifier {
     return tmp;
   }
 
-  void Save_Choices() {
+  void saveChoices() {
     if (_choices.isNotEmpty) {
-      dBChoices.add(Choice(ListToDBChoices(_choices)));
+      dBChoices.add(Choice(listToDBChoices(_choices)));
       for (var element in dBChoices) {
         print(element.description);
       }
-      UpdateDB();
+      updateDB();
       notifyListeners();
     }
   }
 
   //database values
-  String DatabaseName = "Choices_database.db";
-  String TableName = "Choices";
+  String databaseName = "Choices_database.db";
+  String tableName = "Choices";
   late Future<Database> database;
   //create the DB+Get refrence for it
 
-  Future<void> CreateDB() async {
+  Future<void> createDB() async {
     database = openDatabase(
       // Set the path to the database. Note: Using the `join` function from the
       // `path` package is best practice to ensure the path is correctly
       // constructed for each platform.
-      join(await getDatabasesPath(), DatabaseName),
+      join(await getDatabasesPath(), databaseName),
       onCreate: (db, version) {
         // Run the CREATE TABLE statement on the database.
         return db.execute(
@@ -144,7 +144,7 @@ class ChoicesOperation extends ChangeNotifier {
     final db = await database;
     List<String> values = [];
     values.add(choice);
-    await db.delete(TableName,
+    await db.delete(tableName,
         // Use a `where` clause to delete a specific dog.
         where: "Description = ?",
         // Pass the Dog's id as a whereArg to prevent SQL injection.
@@ -153,7 +153,7 @@ class ChoicesOperation extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> UpdateDB() async {
+  Future<void> updateDB() async {
     // Get a reference to the database.
     final Database db = await database;
 
@@ -163,19 +163,19 @@ class ChoicesOperation extends ChangeNotifier {
     // In this case, replace any previous data.
     dBChoices.forEach((element) async {
       await db.insert(
-        TableName,
+        tableName,
         element.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     });
   }
 
-  Future<void> ReadDB() async {
+  Future<void> readDB() async {
     // Get a reference to the database.
     final Database db = await database;
 
     // Query the table for all The Notes.
-    final List<Map<String, dynamic>> maps = await db.query(TableName);
+    final List<Map<String, dynamic>> maps = await db.query(tableName);
 
     // Convert the List<Map<String, dynamic> into a List<Note>.
     dBChoices.clear();
@@ -187,8 +187,8 @@ class ChoicesOperation extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Choice> DBChoicesToList(String DBChoices) {
-    List<String> choices = DBChoices.split(',');
+  List<Choice> dBChoicesToList(String dBChoices) {
+    List<String> choices = dBChoices.split(',');
     List<Choice> choicesReturn = [];
     choicesReturn.clear();
     for (int i = 0; i < choices.length; i++) {
@@ -197,11 +197,11 @@ class ChoicesOperation extends ChangeNotifier {
     return choicesReturn;
   }
 
-  String ListToDBChoices(List<Choice> ListOfChoices) {
-    List<String> ListOfDescription = [];
-    for (int i = 0; i < ListOfChoices.length; i++) {
-      ListOfDescription.add(ListOfChoices[i].description);
+  String listToDBChoices(List<Choice> listOfChoices) {
+    List<String> listOfDescription = [];
+    for (int i = 0; i < listOfChoices.length; i++) {
+      listOfDescription.add(listOfChoices[i].description);
     }
-    return ListOfDescription.join(',');
+    return listOfDescription.join(',');
   }
 }

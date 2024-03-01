@@ -33,18 +33,16 @@ Swipe down to dismiss
       ),
     ),
   );
-  final _scaffoldKey_Saved = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    Provider.of<ChoicesOperation>(context, listen: false).ReadDB();
+    Provider.of<ChoicesOperation>(context, listen: false).readDB();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey_Saved,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: Provider.of<ChoicesOperation>(context, listen: false)
                   .selectedExist(
@@ -52,7 +50,7 @@ Swipe down to dismiss
                           .getDBChoices) ==
               true
           ? selectedAppBar(context)
-          : NormalAppBar(),
+          : normalAppBar(),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -61,14 +59,13 @@ Swipe down to dismiss
                 builder: (context, ChoicesOperation data, child) {
               return ListView.separated(
                   padding: const EdgeInsets.all(15),
-                  itemCount: data.getDBChoices.isEmpty
-                      ? 1
-                      : data.getDBChoices.length,
+                  itemCount:
+                      data.getDBChoices.isEmpty ? 1 : data.getDBChoices.length,
                   separatorBuilder: (BuildContext context, int index) =>
                       const Divider(),
                   itemBuilder: (context, index) {
                     return data.getDBChoices.isEmpty
-                        ? Add_Saved_Choices()
+                        ? addSavedChoices()
                         : choiceCard(context, index, data);
                   });
             }),
@@ -96,7 +93,7 @@ Swipe down to dismiss
             });
           } else {
             Provider.of<ChoicesOperation>(context, listen: false)
-                .SetNewChoices(data.getDBChoices[index].description);
+                .setNewChoices(data.getDBChoices[index].description);
             Navigator.pop(context);
           }
         },
@@ -112,7 +109,7 @@ Swipe down to dismiss
         child: Ink(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: data.getDBChoices[index].Selected == 0
+            color: data.getDBChoices[index].selected == 0
                 ? Theme.of(context).colorScheme.background
                 : Colors.redAccent,
             borderRadius: BorderRadius.circular(15),
@@ -127,7 +124,7 @@ Swipe down to dismiss
                 data.getDBChoices[index].description,
                 style: GoogleFonts.roboto(
                   fontSize: 24,
-                  color: data.getDBChoices[index].Selected == 0
+                  color: data.getDBChoices[index].selected == 0
                       ? Theme.of(context).textTheme.bodyLarge?.color
                       : Colors.black,
                 ),
@@ -139,7 +136,7 @@ Swipe down to dismiss
     );
   }
 
-  Material Add_Saved_Choices() {
+  Material addSavedChoices() {
     return Material(
       elevation: 20,
       color: Colors.transparent,
@@ -170,7 +167,7 @@ Swipe down to dismiss
     );
   }
 
-  PreferredSize NormalAppBar() {
+  PreferredSize normalAppBar() {
     if (Provider.of<ChoicesOperation>(context, listen: false).numSelected(
             Provider.of<ChoicesOperation>(context, listen: false)
                 .getDBChoices) ==
@@ -217,7 +214,7 @@ Swipe down to dismiss
         leading: IconButton(
           icon: const Icon(Icons.select_all),
           onPressed: () => setState(() {
-            Provider.of<ChoicesOperation>(context, listen: false).Select_All(
+            Provider.of<ChoicesOperation>(context, listen: false).selectAll(
                 Provider.of<ChoicesOperation>(context, listen: false)
                     .getDBChoices);
           }),
@@ -232,7 +229,7 @@ Swipe down to dismiss
               onPressed: () {
                 setState(() {
                   Provider.of<ChoicesOperation>(context, listen: false)
-                      .DeleteSelected(
+                      .deleteSelected(
                           Provider.of<ChoicesOperation>(context, listen: false)
                               .getDBChoices);
                   onTapSelect = false;
