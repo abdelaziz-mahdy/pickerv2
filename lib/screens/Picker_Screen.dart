@@ -15,11 +15,13 @@ class Roulette extends StatefulWidget {
 }
 
 class _RouletteState extends State<Roulette> {
-  final StreamController _dividerController = StreamController<int>();
+  ValueNotifier<int> selected = ValueNotifier<int>(0);
+  ValueNotifier<bool> animating = ValueNotifier<bool>(false);
   StreamController<int> controller = StreamController<int>.broadcast();
   final List<Color> colors = [];
+  @override
   dispose() {
-    _dividerController.close();
+    controller.close();
     super.dispose();
   }
 
@@ -47,6 +49,7 @@ class _RouletteState extends State<Roulette> {
 
   @override
   Widget build(BuildContext context) {
+    print("build called");
     return Scaffold(
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
@@ -57,7 +60,6 @@ class _RouletteState extends State<Roulette> {
           'Test Your Luck',
           style: GoogleFonts.roboto(
             fontSize: 24,
-
           ),
         ),
       ),
@@ -80,23 +82,38 @@ class _RouletteState extends State<Roulette> {
                           color: colors[i.key - 1],
                         ))
                 ],
-                onFocusItemChanged: (value) => _dividerController.add(value),
+                onFocusItemChanged: (value) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    selected.value = value;
+                  });
+                },
+                onAnimationStart: () {
+                  animating.value = true;
+                },
+                onAnimationEnd: () {
+                  animating.value = false;
+                },
+                onFling: () => handleRoll(),
               ),
             ),
             SizedBox(height: 10),
-            StreamBuilder(
-                stream: _dividerController.stream,
-                builder: (context, snapshot) {
-                  return snapshot.hasData
-                      ? RouletteScore(snapshot.data!, widget.labels)
-                      : Container();
+            ValueListenableBuilder(
+                valueListenable: selected,
+                builder: (context, value, child) {
+                  print("selected" + value.toString());
+                  return RouletteScore(value, widget.labels);
                 }),
             SizedBox(height: 10),
-            ElevatedButton(
-              child: Text(
-                'Roll',
-              ),
-              onPressed: handleRoll,
+            ValueListenableBuilder(
+              valueListenable: animating,
+              builder: (context, value, child) {
+                return ElevatedButton(
+                  child: Text(
+                    'Roll',
+                  ),
+                  onPressed: value ? null : handleRoll,
+                );
+              },
             )
           ],
         ),
