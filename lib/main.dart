@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pickerv2/tmp/models/choices_operation.dart';
-import 'package:pickerv2/tmp/screens/home_screen.dart';
+import 'package:pickerv2/models/choices_operation.dart';
+import 'package:pickerv2/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pickerv2/tmp/tmp/tmp/models/choices_operation.dart';
+import 'package:pickerv2/models/choices_operation.dart';
 import 'package:provider/provider.dart';
 
 class Saved_Choices_Screen extends StatefulWidget {
