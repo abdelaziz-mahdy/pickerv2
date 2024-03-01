@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
-import 'package:pickerv2/models/choice.dart';
-import 'package:pickerv2/models/choices_operation.dart';
-import 'package:pickerv2/screens/picker_screen.dart';
+import 'package:pickerv2/tmp/models/choice.dart';
+import 'package:pickerv2/tmp/models/choices_operation.dart';
+import 'package:pickerv2/tmp/screens/picker_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'Saved_Choices.dart';
+import '../../screens/Saved_Choices.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
