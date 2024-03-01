@@ -21,14 +21,14 @@ class ChoicesOperation extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selected(var choicesList, int index) {
+  void selected(List<Choice> choicesList, int index) {
     choicesList[index].toggleSelected();
     notifyListeners();
   }
 
-  bool selectedExist(var choicesList) {
+  bool selectedExist(List<Choice> choicesList) {
     for (int i = 0; i < choicesList.length; i++) {
-      if (choicesList[i].Selected == 1) {
+      if (choicesList[i].selected == 1) {
         print(true);
         return true;
       }
@@ -37,10 +37,10 @@ class ChoicesOperation extends ChangeNotifier {
     return false;
   }
 
-  int numSelected(var choicesList) {
+  int numSelected(List<Choice> choicesList) {
     int selected = 0;
     for (int i = 0; i < choicesList.length; i++) {
-      if (choicesList[i].Selected == 1) {
+      if (choicesList[i].selected == 1) {
         selected++;
       }
     }
@@ -53,13 +53,13 @@ class ChoicesOperation extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteSelected(var choicesList) {
+  void deleteSelected(List<Choice> choicesList) {
     var toRemove = [];
-    choicesList.forEach((element) {
-      if (element.Selected == 1) {
+    for (var element in choicesList) {
+      if (element.selected == 1) {
         toRemove.add(element);
       }
-    });
+    }
     choicesList.removeWhere((item) => toRemove.contains(item));
     //deleteDBChoices
     for (var element in toRemove) {
@@ -71,14 +71,14 @@ class ChoicesOperation extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectAll(var choicesList) {
+  void selectAll(List<Choice> choicesList) {
     if (numSelected(choicesList) == choicesList.length) {
       for (int i = 0; i < choicesList.length; i++) {
-        choicesList[i].Selected = 0;
+        choicesList[i].selected = 0;
       }
     } else {
       for (int i = 0; i < choicesList.length; i++) {
-        choicesList[i].Selected = 1;
+        choicesList[i].selected = 1;
       }
     }
     notifyListeners();
