@@ -69,8 +69,7 @@ jobs:
       # Build Android Bundle release file
       - name: Build aab
         run: |
-          flutter build appbundle 
-          --release
+          flutter build appbundle --release
 
       # Upload generated aab to project artifacts
       - name: Upload generated aab to the artifacts
