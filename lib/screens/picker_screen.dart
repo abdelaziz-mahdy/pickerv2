@@ -95,20 +95,27 @@ class _RouletteState extends State<Roulette> {
                 onFling: () => handleRoll(),
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             ValueListenableBuilder(
                 valueListenable: selected,
                 builder: (context, value, child) {
                   return RouletteScore(value, widget.labels);
                 }),
-            const SizedBox(height: 10),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             ValueListenableBuilder(
               valueListenable: animating,
               builder: (context, value, child) {
-                return ElevatedButton(
-                  onPressed: value ? null : handleRoll,
-                  child: const Text(
-                    'Roll',
+                return Center(
+                  child: ElevatedButton(
+                    onPressed: value ? null : handleRoll,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      child: Center(
+                        child: const Text(
+                          'Roll',
+                        ),
+                      ),
+                    ),
                   ),
                 );
               },
