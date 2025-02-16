@@ -110,7 +110,7 @@ Swipe down to dismiss
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
             color: data.getDBChoices[index].selected == 0
-                ? Theme.of(context).colorScheme.background
+                ? Theme.of(context).colorScheme.surface
                 : Colors.redAccent,
             borderRadius: BorderRadius.circular(15),
           ),
@@ -146,7 +146,7 @@ Swipe down to dismiss
         child: Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(15)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

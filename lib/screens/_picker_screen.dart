@@ -11,10 +11,10 @@ class Roulette extends StatefulWidget {
   const Roulette(this.labels, {super.key});
 
   @override
-  _RouletteState createState() => _RouletteState();
+  RouletteState createState() => RouletteState();
 }
 
-class _RouletteState extends State<Roulette> {
+class RouletteState extends State<Roulette> {
   ValueNotifier<int> selected = ValueNotifier<int>(0);
   ValueNotifier<bool> animating = ValueNotifier<bool>(false);
   StreamController<int> controller = StreamController<int>.broadcast();

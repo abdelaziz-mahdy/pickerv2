@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:pickerv2/models/choice.dart';
 import 'package:sqflite/sqflite.dart';
@@ -29,11 +29,15 @@ class ChoicesOperation extends ChangeNotifier {
   bool selectedExist(List<Choice> choicesList) {
     for (int i = 0; i < choicesList.length; i++) {
       if (choicesList[i].selected == 1) {
-        print(true);
+        if (kDebugMode) {
+          print(true);
+        }
         return true;
       }
     }
-    print(false);
+    if (kDebugMode) {
+      print(false);
+    }
     return false;
   }
 
@@ -109,7 +113,9 @@ class ChoicesOperation extends ChangeNotifier {
     if (_choices.isNotEmpty) {
       dBChoices.add(Choice(listToDBChoices(_choices)));
       for (var element in dBChoices) {
-        print(element.description);
+        if (kDebugMode) {
+          print(element.description);
+        }
       }
       updateDB();
       notifyListeners();

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:pickerv2/models/choice.dart';
 import 'package:pickerv2/models/choices_operation.dart';
-import 'package:pickerv2/screens/picker_screen.dart';
-import 'package:pickerv2/screens/saved_choices.dart';
+import 'package:pickerv2/screens/_picker_screen.dart';
+import 'package:pickerv2/screens/_saved_choices.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -11,10 +11,10 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   bool onTapSelect = false;
   final lowChoices = SnackBar(
     content: Text(
@@ -257,7 +257,7 @@ class ChoicesCard extends StatelessWidget {
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
           color: choice.selected == 0
-              ? Theme.of(context).colorScheme.background
+              ? Theme.of(context).colorScheme.surface
               : Colors.redAccent,
           borderRadius: BorderRadius.circular(15)),
       child: Column(
@@ -285,10 +285,10 @@ class InputChoice extends StatefulWidget {
   const InputChoice({super.key});
 
   @override
-  _InputChoiceState createState() => _InputChoiceState();
+  InputChoiceState createState() => InputChoiceState();
 }
 
-class _InputChoiceState extends State<InputChoice> {
+class InputChoiceState extends State<InputChoice> {
   String descriptionText = "";
   TextEditingController txt = TextEditingController();
   final validate =
