@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:pickerv2/models/choice.dart';
 import 'package:pickerv2/models/choices_operation.dart';
-import 'package:pickerv2/screens/_picker_screen.dart';
-import 'package:pickerv2/screens/_saved_choices.dart';
+import 'package:pickerv2/screens/picker_screen.dart';
+import 'package:pickerv2/screens/saved_choices.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
