@@ -7,10 +7,10 @@ class SavedChoicesScreen extends StatefulWidget {
   const SavedChoicesScreen({super.key});
 
   @override
-  _SavedChoicesScreenState createState() => _SavedChoicesScreenState();
+  SavedChoicesScreenState createState() => SavedChoicesScreenState();
 }
 
-class _SavedChoicesScreenState extends State<SavedChoicesScreen> {
+class SavedChoicesScreenState extends State<SavedChoicesScreen> {
   bool onTapSelect = false;
   final savedScreenHelp = SnackBar(
     content: Text(
