@@ -98,8 +98,11 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
 
   Material choiceCard(BuildContext context, int index, ChoicesOperation data) {
     return Material(
-      elevation: 20,
+      elevation: 1,
       color: Colors.transparent,
+      // The shadow follows this shape; without it a square shadow showed
+      // behind the rounded card corners.
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
         onTap: () {
