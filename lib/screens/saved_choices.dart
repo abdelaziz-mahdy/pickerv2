@@ -136,25 +136,57 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
                 : Colors.redAccent,
             borderRadius: BorderRadius.circular(15),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 5,
-              ),
-              Text(
-                data.getDBChoices[index].description,
-                style: GoogleFonts.roboto(
-                  fontSize: 24,
-                  color: data.getDBChoices[index].selected == 0
-                      ? Theme.of(context).textTheme.bodyLarge?.color
-                      : Colors.black,
-                ),
-              )
-            ],
+          child: savedListContent(
+            context,
+            ChoicesOperation.decodeChoices(
+                data.getDBChoices[index].description),
+            selected: data.getDBChoices[index].selected == 1,
           ),
         ),
       ),
+    );
+  }
+
+  /// A saved list shown as its choices, one pill each, instead of the raw
+  /// comma-joined string it is stored as.
+  Widget savedListContent(BuildContext context, List<String> choices,
+      {required bool selected}) {
+    final scheme = Theme.of(context).colorScheme;
+    final textColor = selected ? Colors.black : scheme.onSurfaceVariant;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          choices.length == 1 ? '1 choice' : '${choices.length} choices',
+          style: GoogleFonts.roboto(fontSize: 14, color: textColor),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final choice in choices)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? Colors.white.withValues(alpha: 0.35)
+                      : scheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  choice,
+                  style: GoogleFonts.roboto(
+                    fontSize: 18,
+                    color:
+                        selected ? Colors.black : scheme.onSecondaryContainer,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ],
     );
   }
 
