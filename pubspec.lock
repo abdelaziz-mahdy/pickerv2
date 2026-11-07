@@ -81,22 +81,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
-  community_charts_common:
-    dependency: transitive
-    description:
-      name: community_charts_common
-      sha256: d997ade57f15490346de46efbe23805d378a672aafbf5e47e19517964b671009
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.4"
-  community_charts_flutter:
-    dependency: "direct main"
-    description:
-      name: community_charts_flutter
-      sha256: "4614846b99782ab79b613687704865e5468ecada3f0ad1afe1cdc3ff5b727f72"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.4"
   crypto:
     dependency: transitive
     description:
@@ -105,14 +89,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.8"
-  cupertino_icons:
-    dependency: "direct main"
-    description:
-      name: cupertino_icons
-      sha256: b7cc2390aac296c083bea762859413eb1cf5b630c70e0c7e4d831018f762a8b2
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   cupertino_ui:
     dependency: transitive
     description:
@@ -167,7 +143,7 @@ packages:
     source: hosted
     version: "0.20.5"
   flutter_launcher_icons:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: flutter_launcher_icons
       sha256: "10f13781741a2e3972126fae08393d3c4e01fa4cd7473326b94b72cf594195e7"
@@ -192,14 +168,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  form_validator:
-    dependency: "direct main"
-    description:
-      name: form_validator
-      sha256: "8cbe91b7d5260870d6fb9e23acd55d5d1d1fdf2397f0279a4931ac3c0c7bf8fb"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.1"
   glob:
     dependency: transitive
     description:
@@ -520,14 +488,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
-  screenshot:
-    dependency: "direct main"
-    description:
-      name: screenshot
-      sha256: "63817697a7835e6ce82add4228e15d233b74d42975c143ad8cfe07009fab866b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
