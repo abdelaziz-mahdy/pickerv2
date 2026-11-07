@@ -29,17 +29,25 @@ class HomeScreenState extends State<HomeScreen> {
     ),
   );
   final homeScreenHelp = SnackBar(
-    content: Text(
-      '''Add choices Screen -Help
-      
-to delete choices tap and hold to select and then use the delete icon on the top right
-
-Swipe down to dismiss
-      ''',
-      style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
+    content: Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: 'How to use Picker\n',
+            style:
+                GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          TextSpan(
+            text:
+                '• Type a choice and tap Add Choice. Add at least two.\n• Tap Roll to spin the wheel. Lists you roll are kept under the star.\n• To delete choices, press and hold one to select it, then tap the trash icon.',
+            style: GoogleFonts.roboto(fontSize: 17, height: 1.4),
+          ),
+        ],
+      ),
     ),
+    action: SnackBarAction(label: 'Got it', onPressed: () {}),
+    persist: false,
     behavior: SnackBarBehavior.floating,
-    backgroundColor: Colors.grey,
     duration: const Duration(seconds: 20),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(

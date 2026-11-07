@@ -13,19 +13,25 @@ class SavedChoicesScreen extends StatefulWidget {
 class SavedChoicesScreenState extends State<SavedChoicesScreen> {
   bool onTapSelect = false;
   final savedScreenHelp = SnackBar(
-    content: Text(
-      '''Saved choices Screen -Help
-
-to use the choices you saved just click on them
-
-to delete choices tap and hold to select (Same as add choices screen) and then use the delete icon on the top right
-
-Swipe down to dismiss
-      ''',
-      style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
+    content: Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: 'Saved lists\n',
+            style:
+                GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          TextSpan(
+            text:
+                '• Tap a list to load its choices on the home screen.\n• To delete lists, press and hold one to select it, then tap the trash icon.',
+            style: GoogleFonts.roboto(fontSize: 17, height: 1.4),
+          ),
+        ],
+      ),
     ),
+    action: SnackBarAction(label: 'Got it', onPressed: () {}),
+    persist: false,
     behavior: SnackBarBehavior.floating,
-    backgroundColor: Colors.grey,
     duration: const Duration(seconds: 20),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
