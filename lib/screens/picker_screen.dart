@@ -22,6 +22,9 @@ class RouletteState extends State<Roulette> {
   ValueNotifier<bool> hasRolled = ValueNotifier<bool>(false);
   StreamController<int> controller = StreamController<int>.broadcast();
   final List<Color> colors = [];
+  // The slice the wheel is stopping on (it ends under the pointer). Labels
+  // are laid out for that resting position so none read upside down.
+  int target = 0;
   @override
   dispose() {
     controller.close();
@@ -55,6 +58,7 @@ class RouletteState extends State<Roulette> {
   void handleRoll() {
     // Generate a random number from 0 to widget.labels.keys.length - 1
     int randomIndex = Random().nextInt(widget.labels.keys.length);
+    setState(() => target = randomIndex);
     // Add the random number to the stream
     controller.add(randomIndex);
   }
@@ -83,7 +87,7 @@ class RouletteState extends State<Roulette> {
                 selected: controller.stream,
                 animateFirst: false,
                 items: [
-                  for (var i in widget.labels.entries)
+                  for (var (index, i) in widget.labels.entries.indexed)
                     FortuneItem(
                         // The slice lays its label out across the radius,
                         // centred halfway out. One line with an ellipsis, kept
@@ -92,11 +96,20 @@ class RouletteState extends State<Roulette> {
                         child: LayoutBuilder(
                           builder: (context, constraints) => SizedBox(
                             width: constraints.maxWidth * 0.8,
-                            child: Text(
-                              i.value,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
+                            child: RotatedBox(
+                              // Labels run outward from the hub, so on the
+                              // left half of the resting wheel they'd read
+                              // upside down: turn those half a turn.
+                              quarterTurns: labelReadsUpsideDown(
+                                      index, target, widget.labels.length)
+                                  ? 2
+                                  : 0,
+                              child: Text(
+                                i.value,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                         ),
@@ -180,4 +193,14 @@ class RouletteScore extends StatelessWidget {
           fontSize: 24.0,
         ));
   }
+}
+
+/// Whether slice [index]'s label would read upside down when the wheel rests
+/// with slice [target] under the top pointer. Slices go clockwise from the
+/// top; labels run outward from the hub, so those centred on the left half
+/// (strictly between 180 and 360 degrees) face the wrong way.
+bool labelReadsUpsideDown(int index, int target, int count) {
+  if (count <= 0) return false;
+  final degrees = ((index - target) % count) * 360 / count;
+  return degrees > 180 && degrees < 360;
 }
