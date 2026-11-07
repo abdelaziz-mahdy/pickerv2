@@ -66,16 +66,19 @@ class _RollStyleSheetState extends State<_RollStyleSheet> {
             const SizedBox(height: 24),
             Text('Colours', style: theme.textTheme.titleMedium),
             const SizedBox(height: 12),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
+            // One row of four, so no look wraps onto a line of its own.
+            Row(
               children: [
-                for (final look in RollLook.values)
-                  _LookOption(
-                    look: look,
-                    selected: _settings.look == look,
-                    onTap: () => _set(_settings.copyWith(look: look)),
+                for (final (i, look) in RollLook.values.indexed) ...[
+                  if (i > 0) const SizedBox(width: 8),
+                  Expanded(
+                    child: _LookOption(
+                      look: look,
+                      selected: _settings.look == look,
+                      onTap: () => _set(_settings.copyWith(look: look)),
+                    ),
                   ),
+                ],
               ],
             ),
           ],
@@ -120,10 +123,9 @@ class _LookOption extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(6),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     for (final c in swatches)
-                      Container(width: 14, height: 28, color: c),
+                      Expanded(child: Container(height: 28, color: c)),
                   ],
                 ),
               ),
