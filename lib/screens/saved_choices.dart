@@ -182,16 +182,18 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: selected
-                      ? Colors.white.withValues(alpha: 0.35)
-                      : scheme.secondaryContainer,
+                  // On a selected (secondaryContainer) card the pills use the
+                  // surface colour so they don't disappear into the card.
+                  color: selected ? scheme.surface : scheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   choice,
                   style: TextStyle(
                     fontSize: 18,
-                    color: scheme.onSecondaryContainer,
+                    color: selected
+                        ? scheme.onSurface
+                        : scheme.onSecondaryContainer,
                   ),
                 ),
               ),
