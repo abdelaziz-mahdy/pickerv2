@@ -8,8 +8,8 @@ Can't decide? Type your choices, spin the wheel, and let it pick for you.
 
 - Add as many choices as you like (blank ones are rejected, spaces trimmed).
 - Tap **Roll** or swipe the wheel to spin it; the pick shows under the wheel.
-- Lists you roll are saved, so you can load them again from the star screen.
-  Use the star to save a list without rolling it.
+- Lists you roll are saved automatically; tap the bookmark to save one
+  without rolling. Open the **Saved** tab (bottom bar) to load a list again.
 - Press and hold a choice to select it, then delete it with the trash icon.
   Back clears the selection.
 - The **?** button explains how each screen works.
@@ -19,6 +19,7 @@ Can't decide? Type your choices, spin the wheel, and let it pick for you.
 - `lib/screens/home_screen.dart`: the choice list, selection mode and Roll.
 - `lib/screens/picker_screen.dart`: the wheel (`flutter_fortune_wheel`), with
   labels laid out upright for where the wheel stops.
+- `lib/screens/app_shell.dart`: the bottom bar switching Choices and Saved.
 - `lib/screens/saved_choices.dart`: saved lists, stored in SQLite (`sqflite`).
   Choices that contain a comma are stored as JSON so they load back intact.
 
