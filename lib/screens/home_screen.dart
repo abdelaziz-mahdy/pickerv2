@@ -154,6 +154,9 @@ class HomeScreenState extends State<HomeScreen> {
     return PreferredSize(
       preferredSize: const Size(double.infinity, kToolbarHeight),
       child: AppBar(
+        // The list scrolls below the choice card, not under the app bar, so
+        // the app bar keeps its flat colour when the list is scrolled.
+        notificationPredicate: (_) => false,
         iconTheme: Theme.of(context).iconTheme,
         leading: IconButton(
           icon: const Icon(
@@ -206,6 +209,9 @@ class HomeScreenState extends State<HomeScreen> {
     return PreferredSize(
       preferredSize: const Size(double.infinity, kToolbarHeight),
       child: AppBar(
+        // The list scrolls below the choice card, not under the app bar, so
+        // the app bar keeps its flat colour when the list is scrolled.
+        notificationPredicate: (_) => false,
         leading: IconButton(
           icon: const Icon(Icons.select_all),
           tooltip: 'Select all',
