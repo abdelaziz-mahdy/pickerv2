@@ -7,7 +7,10 @@ Can't decide? Type your choices, spin the wheel, and let it pick for you.
 ## Features
 
 - Add as many choices as you like (blank ones are rejected, spaces trimmed).
-- Tap **Roll** or swipe the wheel to spin it; the pick shows under the wheel.
+- Tap **Roll** or swipe to spin. Pick the roll style (wheel or slot reel) and
+  its colours with the palette button; the app remembers your choice.
+- The result card offers **Spin again** and **Remove & spin** (take the pick
+  out of this roll and spin the rest, e.g. to decide an order).
 - Lists you roll are saved automatically; tap the bookmark to save one
   without rolling. Open the **Saved** tab (bottom bar) to load a list again.
 - Press and hold a choice to select it, then delete it with the trash icon.
@@ -17,8 +20,9 @@ Can't decide? Type your choices, spin the wheel, and let it pick for you.
 ## How it works
 
 - `lib/screens/home_screen.dart`: the choice list, selection mode and Roll.
-- `lib/screens/picker_screen.dart`: the wheel (`flutter_fortune_wheel`), with
-  labels laid out upright for where the wheel stops.
+- `lib/screens/picker_screen.dart`: the roll screen (wheel via
+  `flutter_fortune_wheel`, or `lib/roll/slot_reel.dart`), result card and
+  Remove & spin. `lib/roll/` holds the palettes and the saved roll settings.
 - `lib/screens/app_shell.dart`: the bottom bar switching Choices and Saved.
 - `lib/screens/saved_choices.dart`: saved lists, stored in SQLite (`sqflite`).
   Choices that contain a comma are stored as JSON so they load back intact.
