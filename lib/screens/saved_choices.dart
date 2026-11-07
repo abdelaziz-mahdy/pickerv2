@@ -3,7 +3,11 @@ import 'package:pickerv2/models/choices_operation.dart';
 import 'package:provider/provider.dart';
 
 class SavedChoicesScreen extends StatefulWidget {
-  const SavedChoicesScreen({super.key});
+  const SavedChoicesScreen({super.key, this.onListLoaded});
+
+  /// Called after a saved list is loaded into the choices, so the shell can
+  /// switch back to the Choices tab.
+  final VoidCallback? onListLoaded;
 
   @override
   SavedChoicesScreenState createState() => SavedChoicesScreenState();
@@ -98,8 +102,6 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
-        splashColor: Colors.blue,
-        highlightColor: Colors.red,
         onTap: () {
           if (onTapSelect == true) {
             setState(() {
@@ -111,7 +113,11 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
           } else {
             Provider.of<ChoicesOperation>(context, listen: false)
                 .setNewChoices(data.getDBChoices[index].description);
-            Navigator.pop(context);
+            if (widget.onListLoaded != null) {
+              widget.onListLoaded!();
+            } else {
+              Navigator.pop(context);
+            }
           }
         },
         onLongPress: () {
@@ -193,7 +199,8 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.star_border, size: 72, color: theme.colorScheme.outline),
+            Icon(Icons.bookmarks_outlined,
+                size: 72, color: theme.colorScheme.outline),
             const SizedBox(height: 16),
             Text(
               'No saved lists yet',
@@ -206,7 +213,7 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Lists you roll, or save with the star, show up here so you '
+              'Lists you roll, or save with the bookmark, show up here so you '
               'can load them again later.',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -231,15 +238,7 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
       preferredSize: const Size(double.infinity, kToolbarHeight),
       child: AppBar(
         iconTheme: Theme.of(context).iconTheme,
-        title: Text(
-          "Saved Choices",
-          style: TextStyle(
-            fontSize: 24,
-            color: Theme.of(context).brightness == Brightness.light
-                ? Theme.of(context).colorScheme.secondary
-                : Colors.white,
-          ),
-        ),
+        title: const Text("Saved Lists"),
         centerTitle: true,
         elevation: 0,
         actions: [

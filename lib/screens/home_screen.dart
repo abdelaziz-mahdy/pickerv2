@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pickerv2/models/choice.dart';
 import 'package:pickerv2/models/choices_operation.dart';
 import 'package:pickerv2/screens/picker_screen.dart';
-import 'package:pickerv2/screens/saved_choices.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -35,7 +34,7 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           TextSpan(
             text:
-                '• Type a choice and tap Add Choice. Add at least two.\n• Tap Roll to spin the wheel. Lists you roll are kept under the star.\n• To delete choices, press and hold one to select it, then tap the trash icon.',
+                '• Type a choice and tap Add Choice. Add at least two.\n• Tap Roll to spin the wheel. Lists you roll or save with the bookmark appear in the Saved tab.\n• To delete choices, press and hold one to select it, then tap the trash icon.',
             style: TextStyle(fontSize: 17, height: 1.4),
           ),
         ],
@@ -161,17 +160,25 @@ class HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         actions: [
           IconButton(
-              icon: const Icon(Icons.star_border),
-              tooltip: 'Saved lists',
+              icon: const Icon(Icons.bookmark_add_outlined),
+              tooltip: 'Save list',
               onPressed: () {
-                setState(() {
-                  Provider.of<ChoicesOperation>(context, listen: false)
-                      .saveChoices();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SavedChoicesScreen()));
-                });
+                final operation =
+                    Provider.of<ChoicesOperation>(context, listen: false);
+                final messenger = ScaffoldMessenger.of(context);
+                messenger.removeCurrentSnackBar();
+                if (operation.getChoices.isEmpty) {
+                  messenger.showSnackBar(const SnackBar(
+                    content: Text('Add some choices first'),
+                    behavior: SnackBarBehavior.floating,
+                  ));
+                  return;
+                }
+                operation.saveChoices();
+                messenger.showSnackBar(const SnackBar(
+                  content: Text('List saved. Find it in the Saved tab.'),
+                  behavior: SnackBarBehavior.floating,
+                ));
               })
         ],
       ),

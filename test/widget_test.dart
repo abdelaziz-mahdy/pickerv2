@@ -20,8 +20,8 @@ Future<void> useTestDatabase() async {
 /// fresh database.
 Future<void> pumpApp(WidgetTester tester) async {
   await tester.pumpWidget(const MyApp());
-  await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 300)));
+  await tester
+      .runAsync(() => Future<void>.delayed(const Duration(milliseconds: 300)));
   await tester.pump();
 }
 
@@ -75,6 +75,29 @@ void main() {
     await tester.tap(find.byTooltip('Clear selection'));
     await tester.pump();
     expect(find.text('2 selected'), findsNothing);
+    expect(find.text('Choice Picker'), findsOneWidget);
+  });
+
+  testWidgets('Save list keeps the list; the Saved tab shows it and loads it',
+      (tester) async {
+    await pumpApp(tester);
+    await addChoice(tester, 'Pizza');
+    await addChoice(tester, 'Sushi');
+
+    await tester.tap(find.byTooltip('Save list'));
+    await tester.pump();
+    expect(find.textContaining('List saved'), findsOneWidget);
+
+    await tester.tap(find.text('Saved'));
+    await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 300)));
+    await tester.pumpAndSettle();
+    expect(find.text('Saved Lists'), findsOneWidget);
+    expect(find.text('2 choices'), findsOneWidget);
+
+    // Loading a saved list returns to the Choices tab.
+    await tester.tap(find.text('2 choices'));
+    await tester.pumpAndSettle();
     expect(find.text('Choice Picker'), findsOneWidget);
   });
 }
