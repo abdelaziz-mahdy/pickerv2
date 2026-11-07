@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:pickerv2/main.dart';
 import 'package:pickerv2/models/choices_operation.dart';
+import 'package:pickerv2/screens/app_shell.dart';
 import 'package:pickerv2/screens/home_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /// Runs the app's database on the host through sqflite's FFI backend,
@@ -21,8 +23,17 @@ Future<void> useTestDatabase() async {
 /// fresh database.
 Future<void> pumpApp(WidgetTester tester) async {
   await tester.pumpWidget(const MyApp());
-  await tester
-      .runAsync(() => Future<void>.delayed(const Duration(milliseconds: 300)));
+  await tester.pump();
+  // Wait for the startup reads themselves, not a fixed time (a fixed wait
+  // raced under load): queries run one at a time, so a query issued now
+  // completes only after the ones the screens started.
+  final operation = Provider.of<ChoicesOperation>(
+      tester.element(find.byType(AppShell)),
+      listen: false);
+  await tester.runAsync(() async {
+    final db = await operation.database;
+    await db.rawQuery('SELECT 1');
+  });
   await tester.pump();
 }
 
