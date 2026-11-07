@@ -17,11 +17,17 @@ class Roulette extends StatefulWidget {
 class RouletteState extends State<Roulette> {
   ValueNotifier<int> selected = ValueNotifier<int>(0);
   ValueNotifier<bool> animating = ValueNotifier<bool>(false);
+  // No result until the wheel has been spun once: before that, the name
+  // under the pointer is just the first choice, not a pick.
+  ValueNotifier<bool> hasRolled = ValueNotifier<bool>(false);
   StreamController<int> controller = StreamController<int>.broadcast();
   final List<Color> colors = [];
   @override
   dispose() {
     controller.close();
+    selected.dispose();
+    animating.dispose();
+    hasRolled.dispose();
     super.dispose();
   }
 
@@ -105,10 +111,12 @@ class RouletteState extends State<Roulette> {
                 ],
                 onFocusItemChanged: (value) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    selected.value = value;
+                    // The screen may be closed mid-spin before this runs.
+                    if (mounted) selected.value = value;
                   });
                 },
                 onAnimationStart: () {
+                  hasRolled.value = true;
                   animating.value = true;
                 },
                 onAnimationEnd: () {
@@ -118,10 +126,19 @@ class RouletteState extends State<Roulette> {
               ),
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-            ValueListenableBuilder(
-                valueListenable: selected,
-                builder: (context, value, child) {
-                  return RouletteScore(value, widget.labels);
+            ListenableBuilder(
+                listenable: Listenable.merge([selected, hasRolled]),
+                builder: (context, child) {
+                  if (!hasRolled.value) {
+                    return Text(
+                      'Tap Roll or swipe the wheel',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Theme.of(context).hintColor,
+                      ),
+                    );
+                  }
+                  return RouletteScore(selected.value, widget.labels);
                 }),
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             ValueListenableBuilder(
