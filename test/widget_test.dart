@@ -100,4 +100,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Choice Picker'), findsOneWidget);
   });
+
+  testWidgets('the blank-choice error clears when the user types',
+      (tester) async {
+    await pumpApp(tester);
+    await addChoice(tester, '   ');
+    expect(find.text('Type a choice first'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextFormField), 'Pi');
+    await tester.pump();
+    expect(find.text('Type a choice first'), findsNothing);
+  });
 }

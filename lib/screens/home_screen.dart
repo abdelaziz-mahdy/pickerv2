@@ -361,6 +361,17 @@ class InputChoiceState extends State<InputChoice> {
                   done();
                 },
                 validator: ChoicesOperation.validateChoice,
+                // The blank-choice error only means something while the user
+                // is adding a choice: clear it as soon as they type, or when
+                // they tap elsewhere with the field still empty (e.g. the
+                // bottom bar), instead of leaving it up across tabs.
+                onChanged: (value) {
+                  if (value.trim().isNotEmpty) _form.currentState?.validate();
+                },
+                onTapOutside: (_) {
+                  if (txt.text.trim().isEmpty) _form.currentState?.reset();
+                  FocusScope.of(context).unfocus();
+                },
                 controller: txt,
                 decoration: InputDecoration(
                   errorStyle: TextStyle(
