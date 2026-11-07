@@ -157,16 +157,17 @@ class RouletteState extends State<Roulette> {
             ValueListenableBuilder(
               valueListenable: animating,
               builder: (context, value, child) {
+                // The screen's one action: a full-size filled button, not a
+                // small tonal pill.
                 return Center(
-                  child: ElevatedButton(
+                  child: FilledButton.icon(
                     onPressed: value ? null : handleRoll,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.2,
-                      child: Center(
-                        child: const Text(
-                          'Roll',
-                        ),
-                      ),
+                    icon: const Icon(Icons.casino_outlined),
+                    label: const Text('Roll'),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(200, 56),
+                      textStyle: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                   ),
                 );
