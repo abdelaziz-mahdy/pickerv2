@@ -133,11 +133,15 @@ class RouletteState extends State<Roulette> {
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             ListenableBuilder(
-                listenable: Listenable.merge([selected, hasRolled]),
+                listenable: Listenable.merge([selected, hasRolled, animating]),
                 builder: (context, child) {
-                  if (!hasRolled.value) {
+                  // Mid-spin the slice under the pointer isn't the result;
+                  // show the result only once the wheel has stopped.
+                  if (!hasRolled.value || animating.value) {
                     return Text(
-                      'Tap Roll or swipe the wheel',
+                      animating.value
+                          ? 'Spinning…'
+                          : 'Tap Roll or swipe the wheel',
                       style: TextStyle(
                         fontSize: 20.0,
                         color: Theme.of(context).hintColor,
