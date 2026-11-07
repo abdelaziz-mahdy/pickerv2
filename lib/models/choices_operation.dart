@@ -141,11 +141,15 @@ class ChoicesOperation extends ChangeNotifier {
   //database values
   String databaseName = "Choices_database.db";
   String tableName = "Choices";
-  late Future<Database> database;
-  //create the DB+Get refrence for it
 
-  Future<void> createDB() async {
-    database = openDatabase(
+  /// Opened once, on first use. Both tabs touch the database at startup (the
+  /// Saved tab reads it while Choices is still opening it), so every caller
+  /// awaits the same open instead of racing a late field.
+  Future<Database>? _database;
+  Future<Database> get database => _database ??= _openDatabase();
+
+  Future<Database> _openDatabase() async {
+    return openDatabase(
       // Set the path to the database. Note: Using the `join` function from the
       // `path` package is best practice to ensure the path is correctly
       // constructed for each platform.
@@ -160,6 +164,10 @@ class ChoicesOperation extends ChangeNotifier {
       // path to perform database upgrades and downgrades.
       version: 1,
     );
+  }
+
+  Future<void> createDB() async {
+    await database;
   }
 
   Future<void> deleteDBChoices(String choice) async {

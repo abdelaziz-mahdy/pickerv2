@@ -15,6 +15,16 @@ Future<void> useTestDatabase() async {
   );
 }
 
+/// Pumps the app and lets its startup database work (both tabs read at
+/// launch) finish, so it can't outlive the test and hit the next test's
+/// fresh database.
+Future<void> pumpApp(WidgetTester tester) async {
+  await tester.pumpWidget(const MyApp());
+  await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 300)));
+  await tester.pump();
+}
+
 Future<void> addChoice(WidgetTester tester, String text) async {
   await tester.enterText(find.byType(TextFormField), text);
   await tester.tap(find.text('Add Choice'));
@@ -25,7 +35,7 @@ void main() {
   setUp(useTestDatabase);
 
   testWidgets('a whitespace-only choice is not added', (tester) async {
-    await tester.pumpWidget(const MyApp());
+    await pumpApp(tester);
     await addChoice(tester, '   ');
 
     expect(find.text('Type a choice first'), findsOneWidget);
@@ -33,7 +43,7 @@ void main() {
 
   testWidgets('Back clears the selection instead of leaving the app',
       (tester) async {
-    await tester.pumpWidget(const MyApp());
+    await pumpApp(tester);
     await addChoice(tester, 'Pizza');
     await addChoice(tester, 'Sushi');
 
@@ -52,7 +62,7 @@ void main() {
 
   testWidgets('the X button leaves selection mode; Select all still works',
       (tester) async {
-    await tester.pumpWidget(const MyApp());
+    await pumpApp(tester);
     await addChoice(tester, 'Pizza');
     await addChoice(tester, 'Sushi');
 
