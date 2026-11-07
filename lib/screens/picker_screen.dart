@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:random_color/random_color.dart';
 
 class Roulette extends StatefulWidget {
@@ -71,7 +70,7 @@ class RouletteState extends State<Roulette> {
         centerTitle: true,
         title: Text(
           'Test Your Luck',
-          style: GoogleFonts.roboto(
+          style: TextStyle(
             fontSize: 24,
           ),
         ),

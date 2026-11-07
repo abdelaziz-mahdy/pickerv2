@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pickerv2/models/choices_operation.dart';
 import 'package:provider/provider.dart';
 
@@ -18,13 +17,12 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
         children: [
           TextSpan(
             text: 'Saved lists\n',
-            style:
-                GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           TextSpan(
             text:
                 '• Tap a list to load its choices on the home screen.\n• To delete lists, press and hold one to select it, then tap the trash icon.',
-            style: GoogleFonts.roboto(fontSize: 17, height: 1.4),
+            style: TextStyle(fontSize: 17, height: 1.4),
           ),
         ],
       ),
@@ -155,7 +153,7 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
       children: [
         Text(
           choices.length == 1 ? '1 choice' : '${choices.length} choices',
-          style: GoogleFonts.roboto(fontSize: 14, color: textColor),
+          style: TextStyle(fontSize: 14, color: textColor),
         ),
         const SizedBox(height: 10),
         Wrap(
@@ -174,7 +172,7 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
                 ),
                 child: Text(
                   choice,
-                  style: GoogleFonts.roboto(
+                  style: TextStyle(
                     fontSize: 18,
                     color:
                         selected ? Colors.black : scheme.onSecondaryContainer,
@@ -200,7 +198,7 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
             Text(
               'No saved lists yet',
               textAlign: TextAlign.center,
-              style: GoogleFonts.roboto(
+              style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: theme.colorScheme.onSurface,
@@ -211,7 +209,7 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
               'Lists you roll, or save with the star, show up here so you '
               'can load them again later.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.roboto(
+              style: TextStyle(
                 fontSize: 17,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -235,7 +233,7 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
         iconTheme: Theme.of(context).iconTheme,
         title: Text(
           "Saved Choices",
-          style: GoogleFonts.roboto(
+          style: TextStyle(
             fontSize: 24,
             color: Theme.of(context).brightness == Brightness.light
                 ? Theme.of(context).colorScheme.secondary

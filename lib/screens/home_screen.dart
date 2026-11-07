@@ -4,7 +4,6 @@ import 'package:pickerv2/models/choices_operation.dart';
 import 'package:pickerv2/screens/picker_screen.dart';
 import 'package:pickerv2/screens/saved_choices.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +17,7 @@ class HomeScreenState extends State<HomeScreen> {
   final lowChoices = SnackBar(
     content: Text(
       'Add at least two choices to roll',
-      style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     ),
     behavior: SnackBarBehavior.floating,
     backgroundColor: Colors.red,
@@ -34,13 +33,12 @@ class HomeScreenState extends State<HomeScreen> {
         children: [
           TextSpan(
             text: 'How to use Picker\n',
-            style:
-                GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           TextSpan(
             text:
                 '• Type a choice and tap Add Choice. Add at least two.\n• Tap Roll to spin the wheel. Lists you roll are kept under the star.\n• To delete choices, press and hold one to select it, then tap the trash icon.',
-            style: GoogleFonts.roboto(fontSize: 17, height: 1.4),
+            style: TextStyle(fontSize: 17, height: 1.4),
           ),
         ],
       ),
@@ -140,7 +138,7 @@ class HomeScreenState extends State<HomeScreen> {
       ),
       label: Text(
         'Roll',
-        style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -171,7 +169,7 @@ class HomeScreenState extends State<HomeScreen> {
         ),
         title: Text(
           "Choice Picker",
-          style: GoogleFonts.roboto(
+          style: TextStyle(
             fontSize: 24,
             color: Theme.of(context).brightness == Brightness.light
                 ? Theme.of(context).colorScheme.secondary
@@ -302,7 +300,7 @@ class ChoicesCard extends StatelessWidget {
           ),
           Text(
             choice.description,
-            style: GoogleFonts.roboto(
+            style: TextStyle(
               fontSize: 24,
               color: choice.selected == 0
                   ? Theme.of(context).textTheme.bodyLarge?.color
@@ -371,7 +369,7 @@ class InputChoiceState extends State<InputChoice> {
                 validator: ChoicesOperation.validateChoice,
                 controller: txt,
                 decoration: InputDecoration(
-                  errorStyle: GoogleFonts.roboto(
+                  errorStyle: TextStyle(
                     fontSize: 15,
                   ),
                   errorBorder: const OutlineInputBorder(
@@ -384,17 +382,17 @@ class InputChoiceState extends State<InputChoice> {
                   hintText: 'Enter Choice',
                   // Hint keeps the theme's hint colour so it does not read
                   // as text that was already typed.
-                  hintStyle: GoogleFonts.roboto(
+                  hintStyle: TextStyle(
                     fontSize: 24,
                     color: Theme.of(context).hintColor,
                   ),
                   labelText: 'Choice',
-                  labelStyle: GoogleFonts.roboto(
+                  labelStyle: TextStyle(
                     fontSize: 18,
                     color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
-                style: GoogleFonts.roboto(
+                style: TextStyle(
                     fontSize: 24,
                     color: Theme.of(context).textTheme.bodyLarge?.color),
               ),
@@ -408,7 +406,7 @@ class InputChoiceState extends State<InputChoice> {
               },
               child: Text(
                 'Add Choice',
-                style: GoogleFonts.roboto(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
