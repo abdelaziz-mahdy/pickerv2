@@ -329,7 +329,8 @@ class InputChoiceState extends State<InputChoice> {
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
           // A theme outline instead of a black shadow.
-          border: Border.all(color: Theme.of(context).colorScheme.outline),
+          border:
+              Border.all(color: Theme.of(context).colorScheme.outlineVariant),
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(15)),
       child: Column(
