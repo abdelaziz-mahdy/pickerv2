@@ -8,6 +8,15 @@ import 'package:pickerv2/roll/roll_settings.dart';
 import 'package:pickerv2/roll/slot_reel.dart';
 import 'package:pickerv2/screens/picker_screen.dart';
 
+/// Labels the reel draws filled (bold) rather than as quiet outlines.
+List<String?> boldReelLabels(WidgetTester tester) => [
+      for (final e in find
+          .descendant(of: find.byType(SlotReel), matching: find.byType(Text))
+          .evaluate())
+        if ((e.widget as Text).style?.fontWeight == FontWeight.w600)
+          (e.widget as Text).data,
+    ];
+
 void main() {
   final scheme = ThemeData.light().colorScheme;
 
@@ -158,6 +167,46 @@ void main() {
             labelAt(centre.translate(0, rows * SlotReel.itemExtent)), isNotNull,
             reason: 'row $rows from the frame');
       }
+      // Only the pick's row in the frame stays filled (bold); the rest,
+      // repeats of the pick included, are quiet outlines.
+      expect(boldReelLabels(tester), [pick]);
+
+      // Mid-spin, every label stays centred in its own row.
+      await tester.tap(find.text('Spin again'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 900));
+      final texts = find.descendant(
+          of: find.byType(SlotReel), matching: find.byType(Text));
+      expect(texts, findsWidgets);
+      for (final e in texts.evaluate()) {
+        final text = find.byWidget(e.widget);
+        final box =
+            find.ancestor(of: text, matching: find.byType(AnimatedContainer));
+        expect(tester.getCenter(text).dy,
+            closeTo(tester.getCenter(box.first).dy, 1),
+            reason: (e.widget as Text).data);
+      }
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('a reel down to two choices shows one filled pick',
+        (tester) async {
+      await openRoll(tester);
+      await tester.tap(find.byTooltip('Roll style'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Slot reel'));
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Roll'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Remove & spin'));
+      await tester.pumpAndSettle();
+
+      final pick = tester.widget<ResultCard>(find.byType(ResultCard)).choice;
+      // Two choices alternate down the strip; the pick's other rows must
+      // not look picked too.
+      expect(boldReelLabels(tester), [pick]);
     });
   });
 }

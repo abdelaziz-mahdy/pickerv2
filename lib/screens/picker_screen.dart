@@ -289,9 +289,13 @@ class RouletteState extends State<Roulette> {
   Widget _reel(List<Color> palette) {
     return SlotReel(
       labels: [for (final i in _remaining) _all[i]],
+      // The reel draws the non-picks itself (outlined), so only the pick's
+      // colour comes from the wheel's rules (Mono's dark pick).
       colors: [
-        for (var p = 0; p < _remaining.length; p++) _sliceColor(palette, p),
+        for (var p = 0; p < _remaining.length; p++)
+          _isPick(p) ? _sliceColor(palette, p) : palette[_remaining[p]],
       ],
+      pick: _showResult ? target : null,
       selected: controller.stream,
       duration: _duration,
       onAnimationStart: _onSpinStart,

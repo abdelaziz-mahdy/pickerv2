@@ -20,6 +20,7 @@ class SlotReel extends StatefulWidget {
     required this.colors,
     required this.selected,
     this.duration = const Duration(milliseconds: 4200),
+    this.pick,
     this.onAnimationStart,
     this.onAnimationEnd,
     this.onFling,
@@ -27,11 +28,15 @@ class SlotReel extends StatefulWidget {
 
   final List<String> labels;
 
-  /// One fill per row; the roll screen fades the non-picks once a result
-  /// shows, the same way it does for the wheel.
+  /// One fill per choice.
   final List<Color> colors;
   final Stream<int> selected;
   final Duration duration;
+
+  /// The picked choice once a result shows. Only its row in the frame stays
+  /// filled; every other row, including repeats of the pick further along
+  /// the loop, turns to a quiet outline.
+  final int? pick;
   final VoidCallback? onAnimationStart;
   final VoidCallback? onAnimationEnd;
   final VoidCallback? onFling;
@@ -126,9 +131,23 @@ class _SlotReelState extends State<SlotReel>
         final half = height / 2 / extent;
         final first = (_position - half).floor() - 1;
         final last = (_position + half).ceil() + 1;
+        final inFrame = _position.round();
         return Stack(
           alignment: Alignment.center,
           children: [
+            // The frame marks the row that counts. It sits behind the rows,
+            // showing in the gaps around the row at rest, so a moving row
+            // never has a frame line drawn across its label.
+            IgnorePointer(
+              child: Container(
+                height: extent + 8,
+                margin: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: scheme.primary, width: 3),
+                ),
+              ),
+            ),
             if (n > 0)
               // Rows fade out only at the very edges of the window, where
               // they slide in and out; every whole row stays readable.
@@ -161,23 +180,14 @@ class _SlotReelState extends State<SlotReel>
                           child: _ReelRow(
                             label: widget.labels[k % n],
                             color: widget.colors[k % n],
+                            quiet: widget.pick != null &&
+                                !(k == inFrame && k % n == widget.pick),
                           ),
                         ),
                     ],
                   ),
                 ),
               ),
-            // The frame marks the row that counts.
-            IgnorePointer(
-              child: Container(
-                height: extent + 8,
-                margin: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: scheme.primary, width: 3),
-                ),
-              ),
-            ),
           ],
         );
       }),
@@ -186,30 +196,39 @@ class _SlotReelState extends State<SlotReel>
 }
 
 class _ReelRow extends StatelessWidget {
-  const _ReelRow({required this.label, required this.color});
+  const _ReelRow(
+      {required this.label, required this.color, required this.quiet});
 
   final String label;
   final Color color;
 
+  /// Outlined on the page colour instead of filled: a row that isn't the
+  /// pick, once the result shows.
+  final bool quiet;
+
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final fill = quiet ? scheme.surface : color;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: color,
+        color: fill,
         borderRadius: BorderRadius.circular(12),
+        border:
+            Border.all(color: quiet ? scheme.outlineVariant : fill, width: 1),
       ),
       child: Text(
         label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          color: labelColorOn(color),
+          color: quiet ? scheme.onSurfaceVariant : labelColorOn(fill),
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: quiet ? FontWeight.w500 : FontWeight.w600,
         ),
       ),
     );
