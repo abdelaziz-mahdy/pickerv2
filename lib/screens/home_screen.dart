@@ -325,8 +325,8 @@ class InputChoiceState extends State<InputChoice> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(15),
-      padding: const EdgeInsets.all(15),
+      margin: const EdgeInsets.fromLTRB(15, 12, 15, 4),
+      padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
       decoration: BoxDecoration(
           // A theme outline instead of a black shadow.
           border:
@@ -353,9 +353,11 @@ class InputChoiceState extends State<InputChoice> {
                 onChanged: (value) {
                   if (value.trim().isNotEmpty) _form.currentState?.validate();
                 },
+                // Only clear a stale error here: unfocusing on every outside
+                // tap also fired on the Add Choice button and closed the
+                // keyboard after each added choice.
                 onTapOutside: (_) {
                   if (txt.text.trim().isEmpty) _form.currentState?.reset();
-                  FocusScope.of(context).unfocus();
                 },
                 controller: txt,
                 decoration: InputDecoration(
@@ -379,6 +381,9 @@ class InputChoiceState extends State<InputChoice> {
                     color: Theme.of(context).hintColor,
                   ),
                   labelText: 'Choice',
+                  // Keep the label small at the top so the empty field shows
+                  // the hint; a centred "Choice" read as a typed value.
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
                   labelStyle: TextStyle(
                     fontSize: 18,
                     color: Theme.of(context).textTheme.bodyLarge?.color,

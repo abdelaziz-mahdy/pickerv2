@@ -137,4 +137,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(RollButton), findsNothing);
   });
+
+  testWidgets('the keyboard stays up between added choices', (tester) async {
+    await pumpApp(tester);
+    await tester.tap(find.byType(TextFormField));
+    await tester.pump();
+    await addChoice(tester, 'Pizza');
+    expect(tester.testTextInput.isVisible, isTrue);
+    await addChoice(tester, '   ');
+    expect(tester.testTextInput.isVisible, isTrue);
+  });
 }
