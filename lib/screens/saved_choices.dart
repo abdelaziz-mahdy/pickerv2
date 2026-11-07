@@ -244,8 +244,7 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.help,
-                size: 40, color: Theme.of(context).iconTheme.color),
+            icon: const Icon(Icons.help_outline),
             tooltip: 'Help',
             onPressed: () {
               ScaffoldMessenger.of(context).removeCurrentSnackBar();

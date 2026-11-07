@@ -17,10 +17,8 @@ class HomeScreenState extends State<HomeScreen> {
   final lowChoices = SnackBar(
     content: Text(
       'Add at least two choices to roll',
-      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     ),
     behavior: SnackBarBehavior.floating,
-    backgroundColor: Colors.red,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
         Radius.circular(20),
@@ -132,14 +130,8 @@ class HomeScreenState extends State<HomeScreen> {
                           .ToLabels())));
         }
       },
-      icon: const Icon(
-        Icons.arrow_right,
-        size: 40,
-      ),
-      label: Text(
-        'Roll',
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
+      icon: const Icon(Icons.casino_outlined),
+      label: const Text('Roll'),
     );
   }
 
@@ -157,33 +149,19 @@ class HomeScreenState extends State<HomeScreen> {
         notificationPredicate: (_) => false,
         iconTheme: Theme.of(context).iconTheme,
         leading: IconButton(
-          icon: const Icon(
-            Icons.help,
-            size: 40,
-          ),
+          icon: const Icon(Icons.help_outline),
           tooltip: 'Help',
           onPressed: () {
             ScaffoldMessenger.of(context).removeCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(homeScreenHelp);
           },
         ),
-        title: Text(
-          "Choice Picker",
-          style: TextStyle(
-            fontSize: 24,
-            color: Theme.of(context).brightness == Brightness.light
-                ? Theme.of(context).colorScheme.secondary
-                : Colors.white,
-          ),
-        ),
+        title: const Text("Choice Picker"),
         centerTitle: true,
         elevation: 0,
         actions: [
           IconButton(
-              icon: const Icon(
-                Icons.star,
-                size: 40,
-              ),
+              icon: const Icon(Icons.star_border),
               tooltip: 'Saved lists',
               onPressed: () {
                 setState(() {
@@ -219,7 +197,9 @@ class HomeScreenState extends State<HomeScreen> {
         title: Text("$selected selected"),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.red,
+        // Theme colours, not red: selecting isn't destructive; Delete is.
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
         actions: [
           IconButton(
             icon: const Icon(Icons.select_all),
@@ -247,12 +227,10 @@ class HomeScreenState extends State<HomeScreen> {
 
   Material choiceCard(BuildContext context, int index, ChoicesOperation data) {
     return Material(
-      elevation: 10,
+      elevation: 1,
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
-        splashColor: Colors.blue,
-        highlightColor: Colors.red,
         onTap: () {
           if (onTapSelect == true) {
             setState(() {
@@ -296,7 +274,12 @@ class ChoicesCard extends StatelessWidget {
       decoration: BoxDecoration(
           color: choice.selected == 0
               ? Theme.of(context).colorScheme.surface
-              : Colors.redAccent,
+              : Theme.of(context).colorScheme.secondaryContainer,
+          // An outline marks selected cards at a glance.
+          border: choice.selected == 0
+              ? null
+              : Border.all(
+                  color: Theme.of(context).colorScheme.primary, width: 2),
           borderRadius: BorderRadius.circular(15)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,10 +290,10 @@ class ChoicesCard extends StatelessWidget {
           Text(
             choice.description,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 20,
               color: choice.selected == 0
-                  ? Theme.of(context).textTheme.bodyLarge?.color
-                  : Colors.black,
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSecondaryContainer,
             ),
           )
         ],
@@ -351,14 +334,9 @@ class InputChoiceState extends State<InputChoice> {
       margin: const EdgeInsets.all(15),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(0.0, 0.0), //(x,y)
-              blurRadius: 2.0,
-            ),
-          ],
-          color: Theme.of(context).cardColor,
+          // A theme outline instead of a black shadow.
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(15)),
       child: Column(
         children: [
@@ -378,11 +356,13 @@ class InputChoiceState extends State<InputChoice> {
                   errorStyle: TextStyle(
                     fontSize: 15,
                   ),
-                  errorBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red, width: 2.0),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.error, width: 2.0),
                   ),
-                  focusedErrorBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red, width: 2.0),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.error, width: 2.0),
                   ),
                   border: InputBorder.none,
                   hintText: 'Enter Choice',
@@ -406,17 +386,11 @@ class InputChoiceState extends State<InputChoice> {
           ),
           Align(
             alignment: Alignment.centerRight,
-            child: ElevatedButton(
+            child: FilledButton.tonal(
               onPressed: () {
                 done();
               },
-              child: Text(
-                'Add Choice',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              child: const Text('Add Choice'),
             ),
           )
         ],

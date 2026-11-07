@@ -68,12 +68,7 @@ class RouletteState extends State<Roulette> {
         iconTheme: Theme.of(context).iconTheme,
         elevation: 0.0,
         centerTitle: true,
-        title: Text(
-          'Test Your Luck',
-          style: TextStyle(
-            fontSize: 24,
-          ),
-        ),
+        title: const Text('Test Your Luck'),
       ),
       body: Center(
         child: Column(
