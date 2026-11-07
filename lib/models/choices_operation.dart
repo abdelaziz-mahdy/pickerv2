@@ -44,14 +44,8 @@ class ChoicesOperation extends ChangeNotifier {
   bool selectedExist(List<Choice> choicesList) {
     for (int i = 0; i < choicesList.length; i++) {
       if (choicesList[i].selected == 1) {
-        if (kDebugMode) {
-          print(true);
-        }
         return true;
       }
-    }
-    if (kDebugMode) {
-      print(false);
     }
     return false;
   }
@@ -139,11 +133,6 @@ class ChoicesOperation extends ChangeNotifier {
   void saveChoices() {
     if (_choices.isNotEmpty) {
       dBChoices.add(Choice(listToDBChoices(_choices)));
-      for (var element in dBChoices) {
-        if (kDebugMode) {
-          print(element.description);
-        }
-      }
       updateDB();
       notifyListeners();
     }

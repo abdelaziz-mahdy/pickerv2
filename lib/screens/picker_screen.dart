@@ -41,7 +41,6 @@ class RouletteState extends State<Roulette> {
     for (int i = 0; i < widget.labels.keys.length; i++) {
       colors.add(getRandomColor());
     }
-    // TODO: implement initState
     super.initState();
   }
 
