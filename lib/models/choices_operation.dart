@@ -95,6 +95,13 @@ class ChoicesOperation extends ChangeNotifier {
     await readDB();
   }
 
+  void clearSelection(List<Choice> choicesList) {
+    for (final choice in choicesList) {
+      choice.selected = 0;
+    }
+    notifyListeners();
+  }
+
   void selectAll(List<Choice> choicesList) {
     if (numSelected(choicesList) == choicesList.length) {
       for (int i = 0; i < choicesList.length; i++) {

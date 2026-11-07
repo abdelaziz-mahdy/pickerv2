@@ -42,37 +42,50 @@ Swipe down to dismiss
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: Provider.of<ChoicesOperation>(context, listen: false)
-                  .selectedExist(
-                      Provider.of<ChoicesOperation>(context, listen: false)
-                          .getDBChoices) ==
-              true
-          ? selectedAppBar(context)
-          : normalAppBar(),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: Consumer<ChoicesOperation>(
-                //child: InputChoice(),
-                builder: (context, ChoicesOperation data, child) {
-              return ListView.separated(
-                  padding: const EdgeInsets.all(15),
-                  itemCount:
-                      data.getDBChoices.isEmpty ? 1 : data.getDBChoices.length,
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(),
-                  itemBuilder: (context, index) {
-                    return data.getDBChoices.isEmpty
-                        ? addSavedChoices()
-                        : choiceCard(context, index, data);
-                  });
-            }),
-          ),
-        ],
+    final operation = Provider.of<ChoicesOperation>(context, listen: false);
+    final selecting = operation.selectedExist(operation.getDBChoices);
+    // While choices are selected, Back clears the selection instead of
+    // leaving the screen.
+    return PopScope(
+      canPop: !selecting,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) clearSelection();
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: selecting ? selectedAppBar(context) : normalAppBar(),
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: Consumer<ChoicesOperation>(
+                  //child: InputChoice(),
+                  builder: (context, ChoicesOperation data, child) {
+                return ListView.separated(
+                    padding: const EdgeInsets.all(15),
+                    itemCount: data.getDBChoices.isEmpty
+                        ? 1
+                        : data.getDBChoices.length,
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(),
+                    itemBuilder: (context, index) {
+                      return data.getDBChoices.isEmpty
+                          ? addSavedChoices()
+                          : choiceCard(context, index, data);
+                    });
+              }),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void clearSelection() {
+    setState(() {
+      final operation = Provider.of<ChoicesOperation>(context, listen: false);
+      operation.clearSelection(operation.getDBChoices);
+      onTapSelect = false;
+    });
   }
 
   Material choiceCard(BuildContext context, int index, ChoicesOperation data) {
@@ -212,19 +225,21 @@ Swipe down to dismiss
       child: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.select_all),
+          tooltip: 'Select all',
           onPressed: () => setState(() {
             Provider.of<ChoicesOperation>(context, listen: false).selectAll(
                 Provider.of<ChoicesOperation>(context, listen: false)
                     .getDBChoices);
           }),
         ),
-        title: Text("Selected :$selected"),
+        title: Text("$selected selected"),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.red,
         actions: [
           IconButton(
               icon: const Icon(Icons.delete),
+              tooltip: 'Delete selected',
               onPressed: () {
                 setState(() {
                   Provider.of<ChoicesOperation>(context, listen: false)

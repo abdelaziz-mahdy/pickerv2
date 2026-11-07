@@ -30,4 +30,23 @@ void main() {
 
     expect(find.text('Type a choice first'), findsOneWidget);
   });
+
+  testWidgets('Back clears the selection instead of leaving the app',
+      (tester) async {
+    await tester.pumpWidget(const MyApp());
+    await addChoice(tester, 'Pizza');
+    await addChoice(tester, 'Sushi');
+
+    await tester.longPress(find.text('Pizza'));
+    await tester.pump();
+    expect(find.text('1 selected'), findsOneWidget);
+
+    final handled = await tester.binding.handlePopRoute();
+    await tester.pump();
+
+    expect(handled, isTrue, reason: 'Back must not reach the system');
+    expect(find.text('1 selected'), findsNothing);
+    expect(find.text('Pizza'), findsOneWidget);
+    expect(find.text('Sushi'), findsOneWidget);
+  });
 }

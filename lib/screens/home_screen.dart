@@ -57,37 +57,49 @@ Swipe down to dismiss
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      floatingActionButton: floatingButton(context),
-      appBar: Provider.of<ChoicesOperation>(context, listen: false)
-                  .selectedExist(
-                      Provider.of<ChoicesOperation>(context, listen: false)
-                          .getChoices) ==
-              true
-          ? selectedAppBar(context)
-          : normalAppBar(),
-      body: Column(
-        children: <Widget>[
-          const InputChoice(),
-          Expanded(
-            child: Consumer<ChoicesOperation>(
-                //child: InputChoice(),
-                builder: (context, ChoicesOperation data, child) {
-              return ListView.separated(
-                  padding: const EdgeInsets.all(15),
-                  itemCount: data.getChoices.length,
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(),
-                  itemBuilder: (context, index) {
-                    return choiceCard(context, index, data);
-                  });
-            }),
-          ),
-        ],
+    final operation = Provider.of<ChoicesOperation>(context, listen: false);
+    final selecting = operation.selectedExist(operation.getChoices);
+    // While choices are selected, Back clears the selection instead of
+    // leaving the screen.
+    return PopScope(
+      canPop: !selecting,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) clearSelection();
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        floatingActionButton: floatingButton(context),
+        appBar: selecting ? selectedAppBar(context) : normalAppBar(),
+        body: Column(
+          children: <Widget>[
+            const InputChoice(),
+            Expanded(
+              child: Consumer<ChoicesOperation>(
+                  //child: InputChoice(),
+                  builder: (context, ChoicesOperation data, child) {
+                return ListView.separated(
+                    padding: const EdgeInsets.all(15),
+                    itemCount: data.getChoices.length,
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(),
+                    itemBuilder: (context, index) {
+                      return choiceCard(context, index, data);
+                    });
+              }),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void clearSelection() {
+    setState(() {
+      final operation = Provider.of<ChoicesOperation>(context, listen: false);
+      operation.clearSelection(operation.getChoices);
+      onTapSelect = false;
+    });
   }
 
   FloatingActionButton floatingButton(BuildContext context) {
@@ -178,19 +190,21 @@ Swipe down to dismiss
       child: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.select_all),
+          tooltip: 'Select all',
           onPressed: () => setState(() {
             Provider.of<ChoicesOperation>(context, listen: false).selectAll(
                 Provider.of<ChoicesOperation>(context, listen: false)
                     .getChoices);
           }),
         ),
-        title: Text("Selected :$selected"),
+        title: Text("$selected selected"),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.red,
         actions: [
           IconButton(
               icon: const Icon(Icons.delete),
+              tooltip: 'Delete selected',
               onPressed: () {
                 setState(() {
                   Provider.of<ChoicesOperation>(context, listen: false)
