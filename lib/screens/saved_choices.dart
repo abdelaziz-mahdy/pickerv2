@@ -61,7 +61,10 @@ Swipe down to dismiss
                   //child: InputChoice(),
                   builder: (context, ChoicesOperation data, child) {
                 return ListView.separated(
-                    padding: const EdgeInsets.all(15),
+                    // Keep the last card clear of the gesture bar
+                    // (edge-to-edge).
+                    padding: EdgeInsets.fromLTRB(
+                        15, 15, 15, 15 + MediaQuery.paddingOf(context).bottom),
                     itemCount: data.getDBChoices.isEmpty
                         ? 1
                         : data.getDBChoices.length,

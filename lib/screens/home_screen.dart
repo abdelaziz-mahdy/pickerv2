@@ -79,7 +79,10 @@ Swipe down to dismiss
                   //child: InputChoice(),
                   builder: (context, ChoicesOperation data, child) {
                 return ListView.separated(
-                    padding: const EdgeInsets.all(15),
+                    // Room at the end so the last card can scroll clear of
+                    // the Roll button and the gesture bar (edge-to-edge).
+                    padding: EdgeInsets.fromLTRB(
+                        15, 15, 15, 96 + MediaQuery.paddingOf(context).bottom),
                     itemCount: data.getChoices.length,
                     separatorBuilder: (BuildContext context, int index) =>
                         const SizedBox(height: 12),
