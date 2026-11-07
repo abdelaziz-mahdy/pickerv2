@@ -229,9 +229,7 @@ Swipe down to dismiss
               onPressed: () {
                 setState(() {
                   Provider.of<ChoicesOperation>(context, listen: false)
-                      .deleteSelected(
-                          Provider.of<ChoicesOperation>(context, listen: false)
-                              .getDBChoices);
+                      .deleteSelectedSaved();
                   onTapSelect = false;
                 });
               })

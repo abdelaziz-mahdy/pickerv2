@@ -59,22 +59,27 @@ class ChoicesOperation extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteSelected(List<Choice> choicesList) {
-    var toRemove = [];
-    for (var element in choicesList) {
-      if (element.selected == 1) {
-        toRemove.add(element);
-      }
-    }
-    choicesList.removeWhere((item) => toRemove.contains(item));
-    //deleteDBChoices
-    for (var element in toRemove) {
-      deleteDBChoices(element.description);
-    }
+  /// Removes the selected choices from the list being built on the home
+  /// screen. Saved lists are not touched.
+  void deleteSelectedChoices() {
+    _choices.removeWhere((choice) => choice.selected == 1);
     selectAllState = 1;
-    readDB();
-    //UpdateDB(); need to update the database
     notifyListeners();
+  }
+
+  /// Deletes the selected saved lists from the database, then reloads them.
+  Future<void> deleteSelectedSaved() async {
+    final toRemove = [
+      for (final choice in dBChoices)
+        if (choice.selected == 1) choice.description,
+    ];
+    dBChoices.removeWhere((choice) => choice.selected == 1);
+    selectAllState = 1;
+    notifyListeners();
+    for (final description in toRemove) {
+      await deleteDBChoices(description);
+    }
+    await readDB();
   }
 
   void selectAll(List<Choice> choicesList) {
