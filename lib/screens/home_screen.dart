@@ -217,10 +217,10 @@ class HomeScreenState extends State<HomeScreen> {
 
   Material choiceCard(BuildContext context, int index, ChoicesOperation data) {
     return Material(
-      elevation: 1,
+      // Flat cards: no shadow (shadows drew square corners and looked
+      // heavy); the tint and a hairline outline separate them instead.
+      elevation: 0,
       color: Colors.transparent,
-      // The shadow follows this shape; without it a square shadow showed
-      // behind the rounded card corners.
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
@@ -266,11 +266,12 @@ class ChoicesCard extends StatelessWidget {
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
           color: choice.selected == 0
-              ? Theme.of(context).colorScheme.surface
+              ? Theme.of(context).colorScheme.surfaceContainerLow
               : Theme.of(context).colorScheme.secondaryContainer,
-          // An outline marks selected cards at a glance.
+          // A hairline outline separates cards; a thicker primary outline
+          // marks selected ones at a glance.
           border: choice.selected == 0
-              ? null
+              ? Border.all(color: Theme.of(context).colorScheme.outlineVariant)
               : Border.all(
                   color: Theme.of(context).colorScheme.primary, width: 2),
           borderRadius: BorderRadius.circular(15)),
