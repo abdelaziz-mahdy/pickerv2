@@ -49,4 +49,22 @@ void main() {
     expect(find.text('Pizza'), findsOneWidget);
     expect(find.text('Sushi'), findsOneWidget);
   });
+
+  testWidgets('the X button leaves selection mode; Select all still works',
+      (tester) async {
+    await tester.pumpWidget(const MyApp());
+    await addChoice(tester, 'Pizza');
+    await addChoice(tester, 'Sushi');
+
+    await tester.longPress(find.text('Pizza'));
+    await tester.pump();
+    await tester.tap(find.byTooltip('Select all'));
+    await tester.pump();
+    expect(find.text('2 selected'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Clear selection'));
+    await tester.pump();
+    expect(find.text('2 selected'), findsNothing);
+    expect(find.text('Choice Picker'), findsOneWidget);
+  });
 }

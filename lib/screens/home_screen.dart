@@ -210,20 +210,26 @@ class HomeScreenState extends State<HomeScreen> {
         // The list scrolls below the choice card, not under the app bar, so
         // the app bar keeps its flat colour when the list is scrolled.
         notificationPredicate: (_) => false,
+        // X leaves selection mode, the same as Back.
         leading: IconButton(
-          icon: const Icon(Icons.select_all),
-          tooltip: 'Select all',
-          onPressed: () => setState(() {
-            Provider.of<ChoicesOperation>(context, listen: false).selectAll(
-                Provider.of<ChoicesOperation>(context, listen: false)
-                    .getChoices);
-          }),
+          icon: const Icon(Icons.close),
+          tooltip: 'Clear selection',
+          onPressed: clearSelection,
         ),
         title: Text("$selected selected"),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.red,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.select_all),
+            tooltip: 'Select all',
+            onPressed: () => setState(() {
+              Provider.of<ChoicesOperation>(context, listen: false).selectAll(
+                  Provider.of<ChoicesOperation>(context, listen: false)
+                      .getChoices);
+            }),
+          ),
           IconButton(
               icon: const Icon(Icons.delete),
               tooltip: 'Delete selected',
