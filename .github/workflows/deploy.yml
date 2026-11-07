@@ -5,6 +5,15 @@ on:
   # Run this workflow when any new code is pushed into the main branch
   push:
     branches: [master]
+    # Only app changes are a release. A push that touches nothing but docs,
+    # tests, tooling or CI would re-upload the same version code, which Play
+    # rejects, so it doesn't run the deploy.
+    paths-ignore:
+      - '**/*.md'
+      - '*.md'
+      - 'test/**'
+      - 'tool/**'
+      - '.github/**'
 concurrency:
   group: auto-deploy
   cancel-in-progress: true
