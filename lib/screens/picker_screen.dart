@@ -79,8 +79,20 @@ class RouletteState extends State<Roulette> {
                 items: [
                   for (var i in widget.labels.entries)
                     FortuneItem(
-                        child: Text(
-                          i.value,
+                        // The slice lays its label out across the radius,
+                        // centred halfway out. One line with an ellipsis, kept
+                        // off the hub and the rim, instead of wrapping into
+                        // lines the slice's edges clip.
+                        child: LayoutBuilder(
+                          builder: (context, constraints) => SizedBox(
+                            width: constraints.maxWidth * 0.8,
+                            child: Text(
+                              i.value,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         ),
                         style: FortuneItemStyle(
                           color: colors[i.key - 1],
