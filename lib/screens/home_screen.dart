@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:form_validator/form_validator.dart';
 import 'package:pickerv2/models/choice.dart';
 import 'package:pickerv2/models/choices_operation.dart';
 import 'package:pickerv2/screens/picker_screen.dart';
@@ -287,19 +286,22 @@ class InputChoice extends StatefulWidget {
 }
 
 class InputChoiceState extends State<InputChoice> {
-  String descriptionText = "";
   TextEditingController txt = TextEditingController();
-  final validate =
-      ValidationBuilder().minLength(1, 'Length < 1 😟').maxLength(1500).build();
 
   final GlobalKey<FormState> _form = GlobalKey();
 
   void done() {
     if (_form.currentState!.validate()) {
       Provider.of<ChoicesOperation>(context, listen: false)
-          .addNewChoice(descriptionText);
+          .addNewChoice(txt.text.trim());
       txt.text = "";
     }
+  }
+
+  @override
+  void dispose() {
+    txt.dispose();
+    super.dispose();
   }
 
   @override
@@ -329,7 +331,7 @@ class InputChoiceState extends State<InputChoice> {
                 onEditingComplete: () {
                   done();
                 },
-                validator: validate,
+                validator: ChoicesOperation.validateChoice,
                 controller: txt,
                 decoration: InputDecoration(
                   errorStyle: GoogleFonts.roboto(
@@ -356,9 +358,6 @@ class InputChoiceState extends State<InputChoice> {
                 style: GoogleFonts.roboto(
                     fontSize: 24,
                     color: Theme.of(context).textTheme.bodyLarge?.color),
-                onChanged: (value) {
-                  descriptionText = value;
-                },
               ),
             ),
           ),

@@ -15,4 +15,24 @@ void main() {
 
     expect(operation.getChoices.map((choice) => choice.description), ['Tea']);
   });
+
+  group('validateChoice', () {
+    test('rejects blank and whitespace-only choices', () {
+      expect(ChoicesOperation.validateChoice(null), isNotNull);
+      expect(ChoicesOperation.validateChoice(''), isNotNull);
+      expect(ChoicesOperation.validateChoice('   '), isNotNull);
+    });
+
+    test('accepts a real choice', () {
+      expect(ChoicesOperation.validateChoice('  Pizza '), isNull);
+    });
+
+    test('rejects choices over the length limit', () {
+      expect(
+        ChoicesOperation.validateChoice(
+            'x' * (ChoicesOperation.maxChoiceLength + 1)),
+        isNotNull,
+      );
+    });
+  });
 }

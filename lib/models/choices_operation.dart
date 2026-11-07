@@ -17,6 +17,19 @@ class ChoicesOperation extends ChangeNotifier {
     return dBChoices;
   }
 
+  /// Form validator for a new choice: blank or whitespace-only text is not
+  /// a choice (it showed up as an empty card and an empty wheel slice).
+  static String? validateChoice(String? value) {
+    final text = value?.trim() ?? '';
+    if (text.isEmpty) return 'Type a choice first';
+    if (text.length > maxChoiceLength) {
+      return 'Keep it under $maxChoiceLength characters';
+    }
+    return null;
+  }
+
+  static const int maxChoiceLength = 1500;
+
   void addNewChoice(String description) {
     Choice note = Choice(description);
     _choices.add(note);
