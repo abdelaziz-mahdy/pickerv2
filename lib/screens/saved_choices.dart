@@ -66,20 +66,17 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
               child: Consumer<ChoicesOperation>(
                   //child: InputChoice(),
                   builder: (context, ChoicesOperation data, child) {
+                if (data.getDBChoices.isEmpty) return addSavedChoices();
                 return ListView.separated(
                     // Keep the last card clear of the gesture bar
                     // (edge-to-edge).
                     padding: EdgeInsets.fromLTRB(
                         15, 15, 15, 15 + MediaQuery.paddingOf(context).bottom),
-                    itemCount: data.getDBChoices.isEmpty
-                        ? 1
-                        : data.getDBChoices.length,
+                    itemCount: data.getDBChoices.length,
                     separatorBuilder: (BuildContext context, int index) =>
                         const SizedBox(height: 12),
                     itemBuilder: (context, index) {
-                      return data.getDBChoices.isEmpty
-                          ? addSavedChoices()
-                          : choiceCard(context, index, data);
+                      return choiceCard(context, index, data);
                     });
               }),
             ),
@@ -190,32 +187,36 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
     );
   }
 
-  Material addSavedChoices() {
-    return Material(
-      elevation: 20,
-      color: Colors.transparent,
-      child: InkWell(
-        splashColor: Colors.blue,
-        highlightColor: Colors.red,
-        child: Container(
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(15)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 5,
+  Widget addSavedChoices() {
+    final theme = Theme.of(context);
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.star_border, size: 72, color: theme.colorScheme.outline),
+            const SizedBox(height: 16),
+            Text(
+              'No saved lists yet',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.roboto(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
               ),
-              Text(
-                "roll some choices to have them saved here so you can use them later",
-                style: GoogleFonts.roboto(
-                    fontSize: 24,
-                    color: Theme.of(context).textTheme.bodyLarge?.color),
-              )
-            ],
-          ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Lists you roll, or save with the star, show up here so you '
+              'can load them again later.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.roboto(
+                fontSize: 17,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
         ),
       ),
     );
