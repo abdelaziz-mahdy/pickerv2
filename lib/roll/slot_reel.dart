@@ -98,8 +98,11 @@ class _SlotReelState extends State<SlotReel> {
           ListWheelScrollView.useDelegate(
             controller: _controller,
             itemExtent: SlotReel.itemExtent,
-            diameterRatio: 1.8,
-            perspective: 0.004,
+            // A flatter drum with dimmed outer rows: the tight curve shrank
+            // the top and bottom rows into unreadable slivers.
+            diameterRatio: 3.2,
+            perspective: 0.002,
+            overAndUnderCenterOpacity: 0.55,
             physics: const NeverScrollableScrollPhysics(),
             onSelectedItemChanged: (_) {
               if (_spinning) HapticFeedback.selectionClick();
