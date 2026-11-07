@@ -41,7 +41,13 @@ class AppShellState extends State<AppShell> {
             SavedChoicesScreen(onListLoaded: () => select(0)),
           ],
         ),
-        floatingActionButton: index == 0 ? const RollButton() : null,
+        // Roll needs two choices; below that the button could only say so,
+        // and the empty state already explains it.
+        floatingActionButton: index == 0 &&
+                context.select<ChoicesOperation, bool>(
+                    (o) => o.getChoices.length >= 2)
+            ? const RollButton()
+            : null,
         bottomNavigationBar: NavigationBar(
           selectedIndex: index,
           onDestinationSelected: select,

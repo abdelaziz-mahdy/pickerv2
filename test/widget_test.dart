@@ -124,11 +124,18 @@ void main() {
     expect(find.text('Type a choice first'), findsNothing);
   });
 
-  testWidgets('empty Choices shows a hint; Roll is on Choices only',
+  testWidgets('empty Choices shows a hint; Roll needs 2 choices, Choices only',
       (tester) async {
     await pumpApp(tester);
     expect(
         find.text('Add two or more choices, then tap Roll.'), findsOneWidget);
+    // Roll appears once there are two choices to pick from.
+    expect(find.byType(RollButton), findsNothing);
+    await addChoice(tester, 'Pizza');
+    await tester.pumpAndSettle();
+    expect(find.byType(RollButton), findsNothing);
+    await addChoice(tester, 'Sushi');
+    await tester.pumpAndSettle();
     expect(find.byType(RollButton), findsOneWidget);
 
     await tester.tap(find.text('Saved'));
