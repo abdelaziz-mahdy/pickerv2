@@ -34,7 +34,6 @@ class EditScreen extends StatelessWidget {
         title: const Text("EditChoice"),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.transparent,
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),

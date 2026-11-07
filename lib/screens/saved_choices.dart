@@ -189,7 +189,6 @@ Swipe down to dismiss
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.transparent,
         actions: [
           IconButton(
             icon: Icon(Icons.help,

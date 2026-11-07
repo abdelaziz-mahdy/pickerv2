@@ -33,7 +33,6 @@ class _AddScreenState extends State<AddScreen> {
         title: const Text("AddChoice"),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.transparent,
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),

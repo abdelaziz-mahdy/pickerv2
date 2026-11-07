@@ -52,7 +52,6 @@ class RouletteState extends State<Roulette> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
-        backgroundColor: Colors.transparent,
         elevation: 0.0,
         centerTitle: true,
         title: Text(
