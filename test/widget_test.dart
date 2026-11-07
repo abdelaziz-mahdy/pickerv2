@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:pickerv2/main.dart';
 import 'package:pickerv2/models/choices_operation.dart';
+import 'package:pickerv2/screens/home_screen.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /// Runs the app's database on the host through sqflite's FFI backend,
@@ -110,5 +111,19 @@ void main() {
     await tester.enterText(find.byType(TextFormField), 'Pi');
     await tester.pump();
     expect(find.text('Type a choice first'), findsNothing);
+  });
+
+  testWidgets('empty Choices shows a hint; Roll is on Choices only',
+      (tester) async {
+    await pumpApp(tester);
+    expect(
+        find.text('Add two or more choices, then tap Roll.'), findsOneWidget);
+    expect(find.byType(RollButton), findsOneWidget);
+
+    await tester.tap(find.text('Saved'));
+    await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 300)));
+    await tester.pumpAndSettle();
+    expect(find.byType(RollButton), findsNothing);
   });
 }

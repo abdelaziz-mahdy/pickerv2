@@ -13,17 +13,6 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   bool onTapSelect = false;
-  final lowChoices = SnackBar(
-    content: Text(
-      'Add at least two choices to roll',
-    ),
-    behavior: SnackBarBehavior.floating,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(20),
-      ),
-    ),
-  );
   final homeScreenHelp = SnackBar(
     content: Text.rich(
       TextSpan(
@@ -72,7 +61,6 @@ class HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        floatingActionButton: floatingButton(context),
         appBar: selecting ? selectedAppBar(context) : normalAppBar(),
         body: Column(
           children: <Widget>[
@@ -81,6 +69,26 @@ class HomeScreenState extends State<HomeScreen> {
               child: Consumer<ChoicesOperation>(
                   //child: InputChoice(),
                   builder: (context, ChoicesOperation data, child) {
+                if (data.getChoices.isEmpty) {
+                  // A hint instead of a blank page on first launch.
+                  final theme = Theme.of(context);
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 48, 32, 32),
+                    child: Column(
+                      children: [
+                        Icon(Icons.casino_outlined,
+                            size: 56, color: theme.colorScheme.outline),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Add two or more choices, then tap Roll.',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
+                }
                 return ListView.separated(
                     // Room at the end so the last card can scroll clear of
                     // the Roll button and the gesture bar (edge-to-edge).
@@ -108,32 +116,6 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  FloatingActionButton floatingButton(BuildContext context) {
-    return FloatingActionButton.extended(
-      tooltip: 'Spin the wheel with these choices',
-      onPressed: () {
-        if (Provider.of<ChoicesOperation>(context, listen: false)
-                .getChoices
-                .length <
-            2) {
-          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(lowChoices);
-        } else {
-          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          Provider.of<ChoicesOperation>(context, listen: false).saveChoices();
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => Roulette(
-                      Provider.of<ChoicesOperation>(context, listen: false)
-                          .ToLabels())));
-        }
-      },
-      icon: const Icon(Icons.casino_outlined),
-      label: const Text('Roll'),
-    );
-  }
-
   PreferredSize normalAppBar() {
     if (Provider.of<ChoicesOperation>(context, listen: false).numSelected(
             Provider.of<ChoicesOperation>(context, listen: false).getChoices) ==
@@ -147,18 +129,19 @@ class HomeScreenState extends State<HomeScreen> {
         // the app bar keeps its flat colour when the list is scrolled.
         notificationPredicate: (_) => false,
         iconTheme: Theme.of(context).iconTheme,
-        leading: IconButton(
-          icon: const Icon(Icons.help_outline),
-          tooltip: 'Help',
-          onPressed: () {
-            ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(homeScreenHelp);
-          },
-        ),
         title: const Text("Choice Picker"),
         centerTitle: true,
         elevation: 0,
+        // Help sits on the right on every screen.
         actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            tooltip: 'Help',
+            onPressed: () {
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(homeScreenHelp);
+            },
+          ),
           IconButton(
               icon: const Icon(Icons.bookmark_add_outlined),
               tooltip: 'Save list',
@@ -416,6 +399,45 @@ class InputChoiceState extends State<InputChoice> {
           )
         ],
       ),
+    );
+  }
+}
+
+/// The Choices tab's main action. It lives on the app shell's Scaffold (not
+/// the Choices screen's), so snackbars, which the shell's Scaffold shows,
+/// push it up instead of covering it.
+class RollButton extends StatelessWidget {
+  const RollButton({super.key});
+
+  static const lowChoices = SnackBar(
+    content: Text('Add at least two choices to roll'),
+    behavior: SnackBarBehavior.floating,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton.extended(
+      tooltip: 'Spin the wheel with these choices',
+      onPressed: () {
+        if (Provider.of<ChoicesOperation>(context, listen: false)
+                .getChoices
+                .length <
+            2) {
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(lowChoices);
+        } else {
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          Provider.of<ChoicesOperation>(context, listen: false).saveChoices();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Roulette(
+                      Provider.of<ChoicesOperation>(context, listen: false)
+                          .ToLabels())));
+        }
+      },
+      icon: const Icon(Icons.casino_outlined),
+      label: const Text('Roll'),
     );
   }
 }

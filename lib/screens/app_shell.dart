@@ -41,6 +41,7 @@ class AppShellState extends State<AppShell> {
             SavedChoicesScreen(onListLoaded: () => select(0)),
           ],
         ),
+        floatingActionButton: index == 0 ? const RollButton() : null,
         bottomNavigationBar: NavigationBar(
           selectedIndex: index,
           onDestinationSelected: select,
