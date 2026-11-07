@@ -150,6 +150,10 @@ class _SlotReelState extends State<SlotReel>
                     children: [
                       for (var k = first; k <= last; k++)
                         Positioned(
+                          // Keyed by row, so a row keeps its element as it
+                          // slides and only animates its own fade, never a
+                          // blend into the colour of the row after it.
+                          key: ValueKey(k),
                           left: 0,
                           right: 0,
                           top: height / 2 + (k - _position - 0.5) * extent,
