@@ -41,8 +41,12 @@ class ResultCard extends StatelessWidget {
                   Container(
                     width: 12,
                     height: 12,
-                    decoration:
-                        BoxDecoration(color: color, shape: BoxShape.circle),
+                    // Outlined so pale slice colours still show.
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: scheme.outline),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Text('The pick',
@@ -54,7 +58,12 @@ class ResultCard extends StatelessWidget {
               Text(
                 choice,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.headlineMedium
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                // Long picks drop a size so they don't take over the screen.
+                style: (choice.length > 24
+                        ? theme.textTheme.titleLarge
+                        : theme.textTheme.headlineMedium)
                     ?.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 16),
@@ -64,12 +73,16 @@ class ResultCard extends StatelessWidget {
                 runSpacing: 8,
                 children: [
                   FilledButton.icon(
+                    style:
+                        FilledButton.styleFrom(minimumSize: const Size(0, 48)),
                     onPressed: onSpinAgain,
                     icon: const Icon(Icons.casino_outlined),
                     label: const Text('Spin again'),
                   ),
                   if (onRemoveAndSpin != null)
                     OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 48)),
                       onPressed: onRemoveAndSpin,
                       icon: const Icon(Icons.remove_circle_outline),
                       label: const Text('Remove & spin'),

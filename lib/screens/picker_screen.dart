@@ -203,12 +203,20 @@ class RouletteState extends State<Roulette> {
     );
   }
 
-  /// A slice's colour, faded once a result is showing unless it's the pick.
+  /// A slice's colour; once a result is showing, the others fade to a
+  /// near-neutral tint so the pick stands out in every look (the Theme look
+  /// is pale, so fading alone didn't separate it).
   Color _sliceColor(List<Color> palette, int position) {
     final color = palette[_remaining[position]];
     if (!_showResult || position == target) return color;
-    return Color.lerp(color, Theme.of(context).colorScheme.surface, 0.65)!;
+    final faded = HSLColor.fromColor(
+            Color.lerp(color, Theme.of(context).colorScheme.surface, 0.8)!)
+        .withSaturation(0.05)
+        .toColor();
+    return faded;
   }
+
+  bool _isPick(int position) => _showResult && position == target;
 
   Widget _wheel(List<Color> palette, ColorScheme scheme) {
     final count = _remaining.length;
@@ -250,8 +258,9 @@ class RouletteState extends State<Roulette> {
             ),
             style: FortuneItemStyle(
               color: _sliceColor(palette, p),
-              borderColor: scheme.surface,
-              borderWidth: 2,
+              // The pick gets a thick outline in the theme colour.
+              borderColor: _isPick(p) ? scheme.primary : scheme.surface,
+              borderWidth: _isPick(p) ? 5 : 2,
               textStyle: TextStyle(
                 color: labelColorOn(_sliceColor(palette, p)),
                 fontWeight: FontWeight.w600,
