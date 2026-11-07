@@ -368,9 +368,11 @@ class InputChoiceState extends State<InputChoice> {
                   ),
                   border: InputBorder.none,
                   hintText: 'Enter Choice',
+                  // Hint keeps the theme's hint colour so it does not read
+                  // as text that was already typed.
                   hintStyle: GoogleFonts.roboto(
                     fontSize: 24,
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                    color: Theme.of(context).hintColor,
                   ),
                   labelText: 'Choice',
                   labelStyle: GoogleFonts.roboto(
