@@ -104,6 +104,23 @@ void main() {
       expect(find.text('Remove & spin'), findsNothing);
     });
 
+    testWidgets('switching style clears the last result', (tester) async {
+      await openRoll(tester);
+      await tester.tap(find.text('Roll'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ResultCard), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Roll style'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Slot reel'));
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(10, 10)); // close the sheet
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ResultCard), findsNothing);
+      expect(find.text('Tap Roll or swipe the reel'), findsOneWidget);
+    });
+
     testWidgets('the style sheet switches to the slot reel', (tester) async {
       await openRoll(tester);
       await tester.tap(find.byTooltip('Roll style'));

@@ -111,7 +111,12 @@ class RouletteState extends State<Roulette> {
       context,
       settings: _settings,
       onChanged: (s) {
-        setState(() => _settings = s);
+        setState(() {
+          // A new style starts at rest on the first choice, so the last
+          // result would no longer match what the pointer or frame shows.
+          if (s.style != _settings.style) _hasRolled = false;
+          _settings = s;
+        });
         s.save();
       },
     );
