@@ -119,6 +119,28 @@ void main() {
       await tester.tap(find.text('Roll'));
       await tester.pumpAndSettle();
       expect(find.byType(ResultCard), findsOneWidget);
+
+      // The reel rests with the pick in the frame and a choice in every
+      // slot around it (the old 3D drum left the one above the frame empty).
+      final pick = tester.widget<ResultCard>(find.byType(ResultCard)).choice;
+      final centre = tester.getCenter(find.byType(SlotReel));
+      String? labelAt(Offset point) {
+        for (final e in find
+            .descendant(of: find.byType(SlotReel), matching: find.byType(Text))
+            .evaluate()) {
+          if (tester.getRect(find.byWidget(e.widget)).contains(point)) {
+            return (e.widget as Text).data;
+          }
+        }
+        return null;
+      }
+
+      expect(labelAt(centre), pick);
+      for (final rows in [-2, -1, 1, 2]) {
+        expect(
+            labelAt(centre.translate(0, rows * SlotReel.itemExtent)), isNotNull,
+            reason: 'row $rows from the frame');
+      }
     });
   });
 }

@@ -171,7 +171,7 @@ class RouletteState extends State<Roulette> {
       return ResultCard(
         key: ValueKey('result-$picked-${_remaining.length}'),
         choice: _all[picked],
-        color: palette[picked],
+        color: _sliceColor(palette, target),
         onSpinAgain: handleRoll,
         onRemoveAndSpin: _remaining.length > 2 ? _removeAndSpin : null,
       );
@@ -208,7 +208,14 @@ class RouletteState extends State<Roulette> {
   /// is pale, so fading alone didn't separate it).
   Color _sliceColor(List<Color> palette, int position) {
     final color = palette[_remaining[position]];
-    if (!_showResult || position == target) return color;
+    if (!_showResult) return color;
+    if (position == target) {
+      // Mono's light greys sit too close to the faded ones: the pick turns
+      // the theme's darkest neutral instead.
+      return _settings.look == RollLook.mono
+          ? Theme.of(context).colorScheme.inverseSurface
+          : color;
+    }
     final faded = HSLColor.fromColor(
             Color.lerp(color, Theme.of(context).colorScheme.surface, 0.8)!)
         .withSaturation(0.05)
@@ -277,10 +284,11 @@ class RouletteState extends State<Roulette> {
   Widget _reel(List<Color> palette) {
     return SlotReel(
       labels: [for (final i in _remaining) _all[i]],
-      colors: [for (final i in _remaining) palette[i]],
+      colors: [
+        for (var p = 0; p < _remaining.length; p++) _sliceColor(palette, p),
+      ],
       selected: controller.stream,
       duration: _duration,
-      dimExcept: _showResult ? target : null,
       onAnimationStart: _onSpinStart,
       onAnimationEnd: _onSpinEnd,
       onFling: handleRoll,
