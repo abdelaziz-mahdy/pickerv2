@@ -40,6 +40,12 @@ class RouletteState extends State<Roulette> {
     return _randomColor.randomColor(colorBrightness: ColorBrightness.random);
   }
 
+  static Color labelColorFor(Color slice) {
+    return ThemeData.estimateBrightnessForColor(slice) == Brightness.dark
+        ? Colors.white
+        : Colors.black;
+  }
+
   void handleRoll() {
     // Generate a random number from 0 to widget.labels.keys.length - 1
     int randomIndex = Random().nextInt(widget.labels.keys.length);
@@ -78,6 +84,11 @@ class RouletteState extends State<Roulette> {
                         ),
                         style: FortuneItemStyle(
                           color: colors[i.key - 1],
+                          // Slice colours are random, light or dark: pick
+                          // the label colour that stays readable on each.
+                          textStyle: TextStyle(
+                            color: labelColorFor(colors[i.key - 1]),
+                          ),
                         ))
                 ],
                 onFocusItemChanged: (value) {
