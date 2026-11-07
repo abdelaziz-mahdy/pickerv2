@@ -134,9 +134,11 @@ void main() {
     await addChoice(tester, 'Pizza');
     await tester.pumpAndSettle();
     expect(find.byType(RollButton), findsNothing);
+    expect(find.text('Add one more choice to roll.'), findsOneWidget);
     await addChoice(tester, 'Sushi');
     await tester.pumpAndSettle();
     expect(find.byType(RollButton), findsOneWidget);
+    expect(find.text('Add one more choice to roll.'), findsNothing);
 
     await tester.tap(find.text('Saved'));
     await tester.runAsync(

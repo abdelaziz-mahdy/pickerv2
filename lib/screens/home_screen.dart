@@ -94,10 +94,25 @@ class HomeScreenState extends State<HomeScreen> {
                     // the Roll button and the gesture bar (edge-to-edge).
                     padding: EdgeInsets.fromLTRB(
                         15, 15, 15, 96 + MediaQuery.paddingOf(context).bottom),
-                    itemCount: data.getChoices.length,
+                    // With one choice, a line under it says why Roll isn't
+                    // there yet.
+                    itemCount: data.getChoices.length +
+                        (data.getChoices.length == 1 ? 1 : 0),
                     separatorBuilder: (BuildContext context, int index) =>
                         const SizedBox(height: 12),
                     itemBuilder: (context, index) {
+                      if (index == data.getChoices.length) {
+                        final theme = Theme.of(context);
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: Text(
+                            'Add one more choice to roll.',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }
                       return choiceCard(context, index, data);
                     });
               }),
