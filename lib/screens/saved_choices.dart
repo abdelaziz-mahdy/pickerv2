@@ -66,7 +66,7 @@ Swipe down to dismiss
                         ? 1
                         : data.getDBChoices.length,
                     separatorBuilder: (BuildContext context, int index) =>
-                        const Divider(),
+                        const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       return data.getDBChoices.isEmpty
                           ? addSavedChoices()

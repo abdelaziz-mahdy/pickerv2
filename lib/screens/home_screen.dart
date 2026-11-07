@@ -82,7 +82,7 @@ Swipe down to dismiss
                     padding: const EdgeInsets.all(15),
                     itemCount: data.getChoices.length,
                     separatorBuilder: (BuildContext context, int index) =>
-                        const Divider(),
+                        const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       return choiceCard(context, index, data);
                     });
