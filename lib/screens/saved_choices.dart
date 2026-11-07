@@ -209,6 +209,7 @@ Swipe down to dismiss
           IconButton(
             icon: Icon(Icons.help,
                 size: 40, color: Theme.of(context).iconTheme.color),
+            tooltip: 'Help',
             onPressed: () {
               ScaffoldMessenger.of(context).removeCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(savedScreenHelp);

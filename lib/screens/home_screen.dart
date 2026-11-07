@@ -17,7 +17,7 @@ class HomeScreenState extends State<HomeScreen> {
   bool onTapSelect = false;
   final lowChoices = SnackBar(
     content: Text(
-      'Please add more choices',
+      'Add at least two choices to roll',
       style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
     ),
     behavior: SnackBarBehavior.floating,
@@ -106,7 +106,8 @@ Swipe down to dismiss
   }
 
   FloatingActionButton floatingButton(BuildContext context) {
-    return FloatingActionButton(
+    return FloatingActionButton.extended(
+      tooltip: 'Spin the wheel with these choices',
       onPressed: () {
         if (Provider.of<ChoicesOperation>(context, listen: false)
                 .getChoices
@@ -125,9 +126,13 @@ Swipe down to dismiss
                           .ToLabels())));
         }
       },
-      child: const Icon(
+      icon: const Icon(
         Icons.arrow_right,
-        size: 50,
+        size: 40,
+      ),
+      label: Text(
+        'Roll',
+        style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -147,6 +152,7 @@ Swipe down to dismiss
             Icons.help,
             size: 40,
           ),
+          tooltip: 'Help',
           onPressed: () {
             ScaffoldMessenger.of(context).removeCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(homeScreenHelp);
@@ -169,6 +175,7 @@ Swipe down to dismiss
                 Icons.star,
                 size: 40,
               ),
+              tooltip: 'Saved lists',
               onPressed: () {
                 setState(() {
                   Provider.of<ChoicesOperation>(context, listen: false)
