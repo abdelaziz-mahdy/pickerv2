@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:pickerv2/models/choice.dart';
@@ -194,20 +196,41 @@ class ChoicesOperation extends ChangeNotifier {
   }
 
   List<Choice> dBChoicesToList(String dBChoices) {
-    List<String> choices = dBChoices.split(',');
-    List<Choice> choicesReturn = [];
-    choicesReturn.clear();
-    for (int i = 0; i < choices.length; i++) {
-      choicesReturn.add(Choice(choices[i]));
-    }
-    return choicesReturn;
+    return [for (final choice in decodeChoices(dBChoices)) Choice(choice)];
   }
 
   String listToDBChoices(List<Choice> listOfChoices) {
-    List<String> listOfDescription = [];
-    for (int i = 0; i < listOfChoices.length; i++) {
-      listOfDescription.add(listOfChoices[i].description);
+    return encodeChoices(
+        [for (final choice in listOfChoices) choice.description]);
+  }
+
+  /// Turns a list of choices into the single string kept in the database.
+  ///
+  /// Lists have always been stored comma-joined, which split a choice such
+  /// as "Tacos, burritos" in two when the list was loaded again. Lists whose
+  /// choices hold no comma keep that format, so rows already on the phone
+  /// still match (no duplicate saved lists) and older app versions can read
+  /// them. Only a list that cannot be comma-joined safely is stored as JSON.
+  static String encodeChoices(List<String> choices) {
+    final joined = choices.join(',');
+    final needsJson =
+        choices.any((choice) => choice.contains(',')) || joined.startsWith('[');
+    return needsJson ? jsonEncode(choices) : joined;
+  }
+
+  /// Reads a list written by [encodeChoices] (JSON or the legacy
+  /// comma-joined format).
+  static List<String> decodeChoices(String stored) {
+    if (stored.startsWith('[')) {
+      try {
+        final decoded = jsonDecode(stored);
+        if (decoded is List && decoded.every((item) => item is String)) {
+          return decoded.cast<String>();
+        }
+      } on FormatException {
+        // Not JSON: a legacy list whose first choice starts with '['.
+      }
     }
-    return listOfDescription.join(',');
+    return stored.split(',');
   }
 }
