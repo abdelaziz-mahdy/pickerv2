@@ -98,10 +98,10 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
 
   Material choiceCard(BuildContext context, int index, ChoicesOperation data) {
     return Material(
-      elevation: 1,
+      // Flat cards: no shadow (shadows drew square corners and looked
+      // heavy); the tint and a hairline outline separate them instead.
+      elevation: 0,
       color: Colors.transparent,
-      // The shadow follows this shape; without it a square shadow showed
-      // behind the rounded card corners.
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
@@ -135,9 +135,16 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
         child: Ink(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
+            // Same card style as the Choices tab: tinted with a hairline
+            // outline, and theme colours (not red) when selected.
             color: data.getDBChoices[index].selected == 0
-                ? Theme.of(context).colorScheme.surface
-                : Colors.redAccent,
+                ? Theme.of(context).colorScheme.surfaceContainerLow
+                : Theme.of(context).colorScheme.secondaryContainer,
+            border: data.getDBChoices[index].selected == 0
+                ? Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant)
+                : Border.all(
+                    color: Theme.of(context).colorScheme.primary, width: 2),
             borderRadius: BorderRadius.circular(15),
           ),
           child: savedListContent(
@@ -156,7 +163,8 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
   Widget savedListContent(BuildContext context, List<String> choices,
       {required bool selected}) {
     final scheme = Theme.of(context).colorScheme;
-    final textColor = selected ? Colors.black : scheme.onSurfaceVariant;
+    final textColor =
+        selected ? scheme.onSecondaryContainer : scheme.onSurfaceVariant;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -183,8 +191,7 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
                   choice,
                   style: TextStyle(
                     fontSize: 18,
-                    color:
-                        selected ? Colors.black : scheme.onSecondaryContainer,
+                    color: scheme.onSecondaryContainer,
                   ),
                 ),
               ),
@@ -265,20 +272,29 @@ class SavedChoicesScreenState extends State<SavedChoicesScreen> {
     return PreferredSize(
       preferredSize: const Size(double.infinity, kToolbarHeight),
       child: AppBar(
+        // Same layout as the Choices tab: X on the left, Select all and
+        // Delete on the right.
         leading: IconButton(
-          icon: const Icon(Icons.select_all),
-          tooltip: 'Select all',
-          onPressed: () => setState(() {
-            Provider.of<ChoicesOperation>(context, listen: false).selectAll(
-                Provider.of<ChoicesOperation>(context, listen: false)
-                    .getDBChoices);
-          }),
+          icon: const Icon(Icons.close),
+          tooltip: 'Clear selection',
+          onPressed: clearSelection,
         ),
         title: Text("$selected selected"),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.red,
+        // Theme colours, as on the Choices tab: selecting isn't destructive.
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.select_all),
+            tooltip: 'Select all',
+            onPressed: () => setState(() {
+              Provider.of<ChoicesOperation>(context, listen: false).selectAll(
+                  Provider.of<ChoicesOperation>(context, listen: false)
+                      .getDBChoices);
+            }),
+          ),
           IconButton(
               icon: const Icon(Icons.delete),
               tooltip: 'Delete selected',
