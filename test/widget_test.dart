@@ -1,30 +1,33 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:path/path.dart';
 import 'package:pickerv2/main.dart';
+import 'package:pickerv2/models/choices_operation.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
+/// Runs the app's database on the host through sqflite's FFI backend,
+/// starting each test with no saved lists.
+Future<void> useTestDatabase() async {
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
+  await databaseFactory.deleteDatabase(
+    join(await getDatabasesPath(), ChoicesOperation().databaseName),
+  );
+}
+
+Future<void> addChoice(WidgetTester tester, String text) async {
+  await tester.enterText(find.byType(TextFormField), text);
+  await tester.tap(find.text('Add Choice'));
+  await tester.pump();
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  setUp(useTestDatabase);
+
+  testWidgets('a whitespace-only choice is not added', (tester) async {
     await tester.pumpWidget(const MyApp());
+    await addChoice(tester, '   ');
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Type a choice first'), findsOneWidget);
   });
 }
