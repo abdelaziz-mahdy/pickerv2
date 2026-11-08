@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:pickerv2/models/choice.dart';
@@ -15,6 +17,19 @@ class ChoicesOperation extends ChangeNotifier {
     return dBChoices;
   }
 
+  /// Form validator for a new choice: blank or whitespace-only text is not
+  /// a choice (it showed up as an empty card and an empty wheel slice).
+  static String? validateChoice(String? value) {
+    final text = value?.trim() ?? '';
+    if (text.isEmpty) return 'Type a choice first';
+    if (text.length > maxChoiceLength) {
+      return 'Keep it under $maxChoiceLength characters';
+    }
+    return null;
+  }
+
+  static const int maxChoiceLength = 1500;
+
   void addNewChoice(String description) {
     Choice note = Choice(description);
     _choices.add(note);
@@ -29,14 +44,8 @@ class ChoicesOperation extends ChangeNotifier {
   bool selectedExist(List<Choice> choicesList) {
     for (int i = 0; i < choicesList.length; i++) {
       if (choicesList[i].selected == 1) {
-        if (kDebugMode) {
-          print(true);
-        }
         return true;
       }
-    }
-    if (kDebugMode) {
-      print(false);
     }
     return false;
   }
@@ -57,21 +66,33 @@ class ChoicesOperation extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteSelected(List<Choice> choicesList) {
-    var toRemove = [];
-    for (var element in choicesList) {
-      if (element.selected == 1) {
-        toRemove.add(element);
-      }
-    }
-    choicesList.removeWhere((item) => toRemove.contains(item));
-    //deleteDBChoices
-    for (var element in toRemove) {
-      deleteDBChoices(element.description);
-    }
+  /// Removes the selected choices from the list being built on the home
+  /// screen. Saved lists are not touched.
+  void deleteSelectedChoices() {
+    _choices.removeWhere((choice) => choice.selected == 1);
     selectAllState = 1;
-    readDB();
-    //UpdateDB(); need to update the database
+    notifyListeners();
+  }
+
+  /// Deletes the selected saved lists from the database, then reloads them.
+  Future<void> deleteSelectedSaved() async {
+    final toRemove = [
+      for (final choice in dBChoices)
+        if (choice.selected == 1) choice.description,
+    ];
+    dBChoices.removeWhere((choice) => choice.selected == 1);
+    selectAllState = 1;
+    notifyListeners();
+    for (final description in toRemove) {
+      await deleteDBChoices(description);
+    }
+    await readDB();
+  }
+
+  void clearSelection(List<Choice> choicesList) {
+    for (final choice in choicesList) {
+      choice.selected = 0;
+    }
     notifyListeners();
   }
 
@@ -112,11 +133,6 @@ class ChoicesOperation extends ChangeNotifier {
   void saveChoices() {
     if (_choices.isNotEmpty) {
       dBChoices.add(Choice(listToDBChoices(_choices)));
-      for (var element in dBChoices) {
-        if (kDebugMode) {
-          print(element.description);
-        }
-      }
       updateDB();
       notifyListeners();
     }
@@ -125,11 +141,15 @@ class ChoicesOperation extends ChangeNotifier {
   //database values
   String databaseName = "Choices_database.db";
   String tableName = "Choices";
-  late Future<Database> database;
-  //create the DB+Get refrence for it
 
-  Future<void> createDB() async {
-    database = openDatabase(
+  /// Opened once, on first use. Both tabs touch the database at startup (the
+  /// Saved tab reads it while Choices is still opening it), so every caller
+  /// awaits the same open instead of racing a late field.
+  Future<Database>? _database;
+  Future<Database> get database => _database ??= _openDatabase();
+
+  Future<Database> _openDatabase() async {
+    return openDatabase(
       // Set the path to the database. Note: Using the `join` function from the
       // `path` package is best practice to ensure the path is correctly
       // constructed for each platform.
@@ -144,6 +164,10 @@ class ChoicesOperation extends ChangeNotifier {
       // path to perform database upgrades and downgrades.
       version: 1,
     );
+  }
+
+  Future<void> createDB() async {
+    await database;
   }
 
   Future<void> deleteDBChoices(String choice) async {
@@ -194,20 +218,41 @@ class ChoicesOperation extends ChangeNotifier {
   }
 
   List<Choice> dBChoicesToList(String dBChoices) {
-    List<String> choices = dBChoices.split(',');
-    List<Choice> choicesReturn = [];
-    choicesReturn.clear();
-    for (int i = 0; i < choices.length; i++) {
-      choicesReturn.add(Choice(choices[i]));
-    }
-    return choicesReturn;
+    return [for (final choice in decodeChoices(dBChoices)) Choice(choice)];
   }
 
   String listToDBChoices(List<Choice> listOfChoices) {
-    List<String> listOfDescription = [];
-    for (int i = 0; i < listOfChoices.length; i++) {
-      listOfDescription.add(listOfChoices[i].description);
+    return encodeChoices(
+        [for (final choice in listOfChoices) choice.description]);
+  }
+
+  /// Turns a list of choices into the single string kept in the database.
+  ///
+  /// Lists have always been stored comma-joined, which split a choice such
+  /// as "Tacos, burritos" in two when the list was loaded again. Lists whose
+  /// choices hold no comma keep that format, so rows already on the phone
+  /// still match (no duplicate saved lists) and older app versions can read
+  /// them. Only a list that cannot be comma-joined safely is stored as JSON.
+  static String encodeChoices(List<String> choices) {
+    final joined = choices.join(',');
+    final needsJson =
+        choices.any((choice) => choice.contains(',')) || joined.startsWith('[');
+    return needsJson ? jsonEncode(choices) : joined;
+  }
+
+  /// Reads a list written by [encodeChoices] (JSON or the legacy
+  /// comma-joined format).
+  static List<String> decodeChoices(String stored) {
+    if (stored.startsWith('[')) {
+      try {
+        final decoded = jsonDecode(stored);
+        if (decoded is List && decoded.every((item) => item is String)) {
+          return decoded.cast<String>();
+        }
+      } on FormatException {
+        // Not JSON: a legacy list whose first choice starts with '['.
+      }
     }
-    return listOfDescription.join(',');
+    return stored.split(',');
   }
 }

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:form_validator/form_validator.dart';
 import 'package:pickerv2/models/choice.dart';
 import 'package:pickerv2/models/choices_operation.dart';
 import 'package:pickerv2/screens/picker_screen.dart';
-import 'package:pickerv2/screens/saved_choices.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,31 +13,25 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   bool onTapSelect = false;
-  final lowChoices = SnackBar(
-    content: Text(
-      'Please add more choices',
-      style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
-    ),
-    behavior: SnackBarBehavior.floating,
-    backgroundColor: Colors.red,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(20),
+  final homeScreenHelp = SnackBar(
+    content: Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: 'How to use Picker\n',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          TextSpan(
+            text:
+                '• Type a choice and tap Add Choice. Add at least two.\n• Tap Roll to spin the wheel. Lists you roll or save with the bookmark appear in the Saved tab.\n• To delete choices, press and hold one to select it, then tap the trash icon.',
+            style: TextStyle(fontSize: 17, height: 1.4),
+          ),
+        ],
       ),
     ),
-  );
-  final homeScreenHelp = SnackBar(
-    content: Text(
-      '''Add choices Screen -Help
-      
-to delete choices tap and hold to select and then use the delete icon on the top right
-
-Swipe down to dismiss
-      ''',
-      style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.bold),
-    ),
+    action: SnackBarAction(label: 'Got it', onPressed: () {}),
+    persist: false,
     behavior: SnackBarBehavior.floating,
-    backgroundColor: Colors.grey,
     duration: const Duration(seconds: 20),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
@@ -58,64 +49,86 @@ Swipe down to dismiss
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      floatingActionButton: floatingButton(context),
-      appBar: Provider.of<ChoicesOperation>(context, listen: false)
-                  .selectedExist(
-                      Provider.of<ChoicesOperation>(context, listen: false)
-                          .getChoices) ==
-              true
-          ? selectedAppBar(context)
-          : normalAppBar(),
-      body: Column(
-        children: <Widget>[
-          const InputChoice(),
-          Expanded(
-            child: Consumer<ChoicesOperation>(
-                //child: InputChoice(),
-                builder: (context, ChoicesOperation data, child) {
-              return ListView.separated(
-                  padding: const EdgeInsets.all(15),
-                  itemCount: data.getChoices.length,
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(),
-                  itemBuilder: (context, index) {
-                    return choiceCard(context, index, data);
-                  });
-            }),
-          ),
-        ],
+    final operation = Provider.of<ChoicesOperation>(context, listen: false);
+    final selecting = operation.selectedExist(operation.getChoices);
+    // While choices are selected, Back clears the selection instead of
+    // leaving the screen.
+    return PopScope(
+      canPop: !selecting,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) clearSelection();
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: selecting ? selectedAppBar(context) : normalAppBar(),
+        body: Column(
+          children: <Widget>[
+            const InputChoice(),
+            Expanded(
+              child: Consumer<ChoicesOperation>(
+                  //child: InputChoice(),
+                  builder: (context, ChoicesOperation data, child) {
+                if (data.getChoices.isEmpty) {
+                  // A hint instead of a blank page on first launch.
+                  final theme = Theme.of(context);
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 48, 32, 32),
+                    child: Column(
+                      children: [
+                        Icon(Icons.casino_outlined,
+                            size: 56, color: theme.colorScheme.outline),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Add two or more choices, then tap Roll.',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return ListView.separated(
+                    // Room at the end so the last card can scroll clear of
+                    // the Roll button and the gesture bar (edge-to-edge).
+                    padding: EdgeInsets.fromLTRB(
+                        15, 15, 15, 96 + MediaQuery.paddingOf(context).bottom),
+                    // With one choice, a line under it says why Roll isn't
+                    // there yet.
+                    itemCount: data.getChoices.length +
+                        (data.getChoices.length == 1 ? 1 : 0),
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      if (index == data.getChoices.length) {
+                        final theme = Theme.of(context);
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: Text(
+                            'Add one more choice to roll.',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }
+                      return choiceCard(context, index, data);
+                    });
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  FloatingActionButton floatingButton(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        if (Provider.of<ChoicesOperation>(context, listen: false)
-                .getChoices
-                .length <
-            2) {
-          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(lowChoices);
-        } else {
-          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          Provider.of<ChoicesOperation>(context, listen: false).saveChoices();
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => Roulette(
-                      Provider.of<ChoicesOperation>(context, listen: false)
-                          .ToLabels())));
-        }
-      },
-      child: const Icon(
-        Icons.arrow_right,
-        size: 50,
-      ),
-    );
+  void clearSelection() {
+    setState(() {
+      final operation = Provider.of<ChoicesOperation>(context, listen: false);
+      operation.clearSelection(operation.getChoices);
+      onTapSelect = false;
+    });
   }
 
   PreferredSize normalAppBar() {
@@ -127,44 +140,43 @@ Swipe down to dismiss
     return PreferredSize(
       preferredSize: const Size(double.infinity, kToolbarHeight),
       child: AppBar(
+        // The list scrolls below the choice card, not under the app bar, so
+        // the app bar keeps its flat colour when the list is scrolled.
+        notificationPredicate: (_) => false,
         iconTheme: Theme.of(context).iconTheme,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.help,
-            size: 40,
-          ),
-          onPressed: () {
-            ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(homeScreenHelp);
-          },
-        ),
-        title: Text(
-          "Choice Picker",
-          style: GoogleFonts.roboto(
-            fontSize: 24,
-            color: Theme.of(context).brightness == Brightness.light
-                ? Theme.of(context).colorScheme.secondary
-                : Colors.white,
-          ),
-        ),
+        title: const Text("Choice Picker"),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        // Help sits on the right on every screen.
         actions: [
           IconButton(
-              icon: const Icon(
-                Icons.star,
-                size: 40,
-              ),
+            icon: const Icon(Icons.help_outline),
+            tooltip: 'Help',
+            onPressed: () {
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(homeScreenHelp);
+            },
+          ),
+          IconButton(
+              icon: const Icon(Icons.bookmark_add_outlined),
+              tooltip: 'Save list',
               onPressed: () {
-                setState(() {
-                  Provider.of<ChoicesOperation>(context, listen: false)
-                      .saveChoices();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SavedChoicesScreen()));
-                });
+                final operation =
+                    Provider.of<ChoicesOperation>(context, listen: false);
+                final messenger = ScaffoldMessenger.of(context);
+                messenger.removeCurrentSnackBar();
+                if (operation.getChoices.isEmpty) {
+                  messenger.showSnackBar(const SnackBar(
+                    content: Text('Add some choices first'),
+                    behavior: SnackBarBehavior.floating,
+                  ));
+                  return;
+                }
+                operation.saveChoices();
+                messenger.showSnackBar(const SnackBar(
+                  content: Text('List saved. Find it in the Saved tab.'),
+                  behavior: SnackBarBehavior.floating,
+                ));
               })
         ],
       ),
@@ -178,27 +190,38 @@ Swipe down to dismiss
     return PreferredSize(
       preferredSize: const Size(double.infinity, kToolbarHeight),
       child: AppBar(
+        // The list scrolls below the choice card, not under the app bar, so
+        // the app bar keeps its flat colour when the list is scrolled.
+        notificationPredicate: (_) => false,
+        // X leaves selection mode, the same as Back.
         leading: IconButton(
-          icon: const Icon(Icons.select_all),
-          onPressed: () => setState(() {
-            Provider.of<ChoicesOperation>(context, listen: false).selectAll(
-                Provider.of<ChoicesOperation>(context, listen: false)
-                    .getChoices);
-          }),
+          icon: const Icon(Icons.close),
+          tooltip: 'Clear selection',
+          onPressed: clearSelection,
         ),
-        title: Text("Selected :$selected"),
+        title: Text("$selected selected"),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.red,
+        // Theme colours, not red: selecting isn't destructive; Delete is.
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
         actions: [
           IconButton(
+            icon: const Icon(Icons.select_all),
+            tooltip: 'Select all',
+            onPressed: () => setState(() {
+              Provider.of<ChoicesOperation>(context, listen: false).selectAll(
+                  Provider.of<ChoicesOperation>(context, listen: false)
+                      .getChoices);
+            }),
+          ),
+          IconButton(
               icon: const Icon(Icons.delete),
+              tooltip: 'Delete selected',
               onPressed: () {
                 setState(() {
                   Provider.of<ChoicesOperation>(context, listen: false)
-                      .deleteSelected(
-                          Provider.of<ChoicesOperation>(context, listen: false)
-                              .getChoices);
+                      .deleteSelectedChoices();
                   onTapSelect = false;
                 });
               })
@@ -209,12 +232,13 @@ Swipe down to dismiss
 
   Material choiceCard(BuildContext context, int index, ChoicesOperation data) {
     return Material(
-      elevation: 10,
+      // Flat cards: no shadow (shadows drew square corners and looked
+      // heavy); the tint and a hairline outline separate them instead.
+      elevation: 0,
       color: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
-        splashColor: Colors.blue,
-        highlightColor: Colors.red,
         onTap: () {
           if (onTapSelect == true) {
             setState(() {
@@ -257,8 +281,14 @@ class ChoicesCard extends StatelessWidget {
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
           color: choice.selected == 0
-              ? Theme.of(context).colorScheme.surface
-              : Colors.redAccent,
+              ? Theme.of(context).colorScheme.surfaceContainerLow
+              : Theme.of(context).colorScheme.secondaryContainer,
+          // A hairline outline separates cards; a thicker primary outline
+          // marks selected ones at a glance.
+          border: choice.selected == 0
+              ? Border.all(color: Theme.of(context).colorScheme.outlineVariant)
+              : Border.all(
+                  color: Theme.of(context).colorScheme.primary, width: 2),
           borderRadius: BorderRadius.circular(15)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,11 +298,11 @@ class ChoicesCard extends StatelessWidget {
           ),
           Text(
             choice.description,
-            style: GoogleFonts.roboto(
-              fontSize: 24,
+            style: TextStyle(
+              fontSize: 20,
               color: choice.selected == 0
-                  ? Theme.of(context).textTheme.bodyLarge?.color
-                  : Colors.black,
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSecondaryContainer,
             ),
           )
         ],
@@ -289,35 +319,34 @@ class InputChoice extends StatefulWidget {
 }
 
 class InputChoiceState extends State<InputChoice> {
-  String descriptionText = "";
   TextEditingController txt = TextEditingController();
-  final validate =
-      ValidationBuilder().minLength(1, 'Length < 1 😟').maxLength(1500).build();
 
   final GlobalKey<FormState> _form = GlobalKey();
 
   void done() {
     if (_form.currentState!.validate()) {
       Provider.of<ChoicesOperation>(context, listen: false)
-          .addNewChoice(descriptionText);
+          .addNewChoice(txt.text.trim());
       txt.text = "";
     }
   }
 
   @override
+  void dispose() {
+    txt.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(15),
-      padding: const EdgeInsets.all(15),
+      margin: const EdgeInsets.fromLTRB(15, 12, 15, 4),
+      padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
       decoration: BoxDecoration(
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(0.0, 0.0), //(x,y)
-              blurRadius: 2.0,
-            ),
-          ],
-          color: Theme.of(context).cardColor,
+          // A theme outline instead of a black shadow.
+          border:
+              Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(15)),
       child: Column(
         children: [
@@ -331,56 +360,109 @@ class InputChoiceState extends State<InputChoice> {
                 onEditingComplete: () {
                   done();
                 },
-                validator: validate,
+                validator: ChoicesOperation.validateChoice,
+                // The blank-choice error only means something while the user
+                // is adding a choice: clear it as soon as they type, or when
+                // they tap elsewhere with the field still empty (e.g. the
+                // bottom bar), instead of leaving it up across tabs.
+                onChanged: (value) {
+                  if (value.trim().isNotEmpty) _form.currentState?.validate();
+                },
+                // Only clear a stale error here: unfocusing on every outside
+                // tap also fired on the Add Choice button and closed the
+                // keyboard after each added choice.
+                onTapOutside: (_) {
+                  if (txt.text.trim().isEmpty) _form.currentState?.reset();
+                },
                 controller: txt,
                 decoration: InputDecoration(
-                  errorStyle: GoogleFonts.roboto(
+                  errorStyle: TextStyle(
                     fontSize: 15,
                   ),
-                  errorBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red, width: 2.0),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.error, width: 2.0),
                   ),
-                  focusedErrorBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red, width: 2.0),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.error, width: 2.0),
                   ),
                   border: InputBorder.none,
                   hintText: 'Enter Choice',
-                  hintStyle: GoogleFonts.roboto(
+                  // Hint keeps the theme's hint colour so it does not read
+                  // as text that was already typed.
+                  hintStyle: TextStyle(
                     fontSize: 24,
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                    color: Theme.of(context).hintColor,
                   ),
                   labelText: 'Choice',
-                  labelStyle: GoogleFonts.roboto(
+                  // Keep the label small at the top so the empty field shows
+                  // the hint; a centred "Choice" read as a typed value.
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  labelStyle: TextStyle(
                     fontSize: 18,
                     color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
-                style: GoogleFonts.roboto(
+                style: TextStyle(
                     fontSize: 24,
                     color: Theme.of(context).textTheme.bodyLarge?.color),
-                onChanged: (value) {
-                  descriptionText = value;
-                },
               ),
             ),
           ),
           Align(
             alignment: Alignment.centerRight,
-            child: ElevatedButton(
+            child: FilledButton.tonal(
               onPressed: () {
                 done();
               },
-              child: Text(
-                'Add Choice',
-                style: GoogleFonts.roboto(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              child: const Text('Add Choice'),
             ),
           )
         ],
       ),
+    );
+  }
+}
+
+/// The Choices tab's main action. It lives on the app shell's Scaffold (not
+/// the Choices screen's), so snackbars, which the shell's Scaffold shows,
+/// push it up instead of covering it.
+class RollButton extends StatelessWidget {
+  const RollButton({super.key});
+
+  static const lowChoices = SnackBar(
+    content: Text('Add at least two choices to roll'),
+    behavior: SnackBarBehavior.floating,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton.extended(
+      tooltip: 'Spin the wheel with these choices',
+      onPressed: () {
+        if (Provider.of<ChoicesOperation>(context, listen: false)
+                .getChoices
+                .length <
+            2) {
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(lowChoices);
+        } else {
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          // The input keeps focus between added choices; drop it here so the
+          // keyboard doesn't pop back up over the list after the roll.
+          FocusManager.instance.primaryFocus?.unfocus();
+          Provider.of<ChoicesOperation>(context, listen: false).saveChoices();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Roulette(
+                      Provider.of<ChoicesOperation>(context, listen: false)
+                          .ToLabels())));
+        }
+      },
+      icon: const Icon(Icons.casino_outlined),
+      label: const Text('Roll'),
     );
   }
 }

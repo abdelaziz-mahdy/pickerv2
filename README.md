@@ -1,16 +1,49 @@
-# pickerv2
+# Picker
 
-Flutter app: to pick a choose randomly from multiple choices
+Can't decide? Type your choices, spin the wheel, and let it pick for you.
 
-## Getting Started
+[Get it on Google Play](https://play.google.com/store/apps/details?id=com.Zcreations.pickerv2)
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- Add as many choices as you like (blank ones are rejected, spaces trimmed).
+- Tap **Roll** or swipe to spin. Pick the roll style (wheel or slot reel) and
+  its colours with the palette button; the app remembers your choice.
+- The result card offers **Spin again** and **Remove & spin** (take the pick
+  out of this roll and spin the rest, e.g. to decide an order).
+- Lists you roll are saved automatically; tap the bookmark to save one
+  without rolling. Open the **Saved** tab (bottom bar) to load a list again.
+- Press and hold a choice to select it, then delete it with the trash icon.
+  Back clears the selection.
+- The **?** button explains how each screen works.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## How it works
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- `lib/screens/home_screen.dart`: the choice list, selection mode and Roll.
+- `lib/screens/picker_screen.dart`: the roll screen (wheel via
+  `flutter_fortune_wheel`, or `lib/roll/slot_reel.dart`), result card and
+  Remove & spin. `lib/roll/` holds the palettes and the saved roll settings.
+- `lib/screens/app_shell.dart`: the bottom bar switching Choices and Saved.
+- `lib/screens/saved_choices.dart`: saved lists, stored in SQLite (`sqflite`).
+  Choices that contain a comma are stored as JSON so they load back intact.
+
+## Run it
+
+```bash
+flutter pub get
+flutter run
+flutter test
+```
+
+Android builds need JDK 17. If Flutter picks a newer JDK that Gradle can't
+run, build through Gradle with `JAVA_HOME` pointing at JDK 17.
+
+## Releasing
+
+Every push to `master` is a Google Play **production** release
+(`.github/workflows/deploy.yml`). To release:
+
+1. Bump `version:` in `pubspec.yaml`. The build number after `+` must increase.
+2. Add a `CHANGELOG.md` entry written for users (500 characters max). It
+   becomes the Play "What's new" text.
+3. Merge to `master` in one push.

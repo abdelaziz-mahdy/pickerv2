@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pickerv2/models/choices_operation.dart';
-import 'package:pickerv2/screens/home_screen.dart';
+import 'package:pickerv2/screens/app_shell.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         darkTheme: ThemeData.dark(),
         theme: ThemeData.light(),
         themeMode: ThemeMode.system,
-        home: const HomeScreen(),
+        home: const AppShell(),
       ),
     );
   }
