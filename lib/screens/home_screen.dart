@@ -449,6 +449,9 @@ class RollButton extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(lowChoices);
         } else {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          // The input keeps focus between added choices; drop it here so the
+          // keyboard doesn't pop back up over the list after the roll.
+          FocusManager.instance.primaryFocus?.unfocus();
           Provider.of<ChoicesOperation>(context, listen: false).saveChoices();
           Navigator.push(
               context,

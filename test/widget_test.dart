@@ -147,6 +147,23 @@ void main() {
     expect(find.byType(RollButton), findsNothing);
   });
 
+  testWidgets('Roll closes the keyboard so it stays down after the roll',
+      (tester) async {
+    await pumpApp(tester);
+    await tester.tap(find.byType(TextFormField));
+    await tester.pump();
+    await addChoice(tester, 'Pizza');
+    await addChoice(tester, 'Sushi');
+    await tester.pumpAndSettle();
+    expect(tester.testTextInput.isVisible, isTrue);
+
+    await tester.tap(find.byType(RollButton));
+    await tester.pumpAndSettle();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(tester.testTextInput.isVisible, isFalse);
+  });
+
   testWidgets('the keyboard stays up between added choices', (tester) async {
     await pumpApp(tester);
     await tester.tap(find.byType(TextFormField));
