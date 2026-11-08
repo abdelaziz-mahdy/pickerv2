@@ -128,6 +128,9 @@ void main() {
 
       expect(find.byType(ResultCard), findsNothing);
       expect(find.text('Tap Roll or swipe the reel'), findsOneWidget);
+      // The new view rests on the first choice, so labels are laid out for
+      // that, not for the old pick (which left some reading upside down).
+      expect(tester.state<RouletteState>(find.byType(Roulette)).target, 0);
     });
 
     testWidgets('the style sheet switches to the slot reel', (tester) async {
