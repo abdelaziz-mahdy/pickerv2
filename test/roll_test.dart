@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pickerv2/roll/result_card.dart';
 import 'package:pickerv2/roll/roll_palette.dart';
@@ -111,6 +112,19 @@ void main() {
       expect(second, isNot(first));
       // Two left: removing another would leave nothing to pick from.
       expect(find.text('Remove & spin'), findsNothing);
+    });
+
+    testWidgets('a quick swipe across the wheel spins it', (tester) async {
+      await openRoll(tester);
+      final wheel = tester.getRect(find.byType(FortuneWheel));
+      // Starts just off the rim of the disc, inside the wheel area.
+      await tester.flingFrom(
+          wheel.topCenter + const Offset(-100, 30), const Offset(200, 0), 1500);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('Spinning…'), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.byType(ResultCard), findsOneWidget);
     });
 
     testWidgets('switching style clears the last result', (tester) async {

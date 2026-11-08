@@ -48,6 +48,14 @@ class RouletteState extends State<Roulette> {
   Duration _duration = const Duration(milliseconds: 4500);
   int _rotations = 10;
 
+  /// A spin has been asked for but hasn't started yet, so a second request
+  /// in the same frame (a swipe and a tap) can't queue another spin.
+  bool _starting = false;
+
+  /// Where and when the current touch on the wheel began, for swipe-to-spin.
+  Offset? _swipeFrom;
+  Duration? _swipeAt;
+
   bool get _showResult => _hasRolled && !_animating;
 
   @override
@@ -65,7 +73,8 @@ class RouletteState extends State<Roulette> {
   }
 
   void handleRoll() {
-    if (_animating || _remaining.length < 2) return;
+    if (_animating || _starting || _remaining.length < 2) return;
+    _starting = true;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     setState(() {
       target = _random.nextInt(_remaining.length);
@@ -99,11 +108,25 @@ class RouletteState extends State<Roulette> {
   void _onSpinStart() => setState(() {
         _hasRolled = true;
         _animating = true;
+        _starting = false;
       });
 
   void _onSpinEnd() {
     HapticFeedback.mediumImpact();
     setState(() => _animating = false);
+  }
+
+  /// A quick drag across the wheel spins it, like a flick.
+  void _onWheelPointerUp(PointerUpEvent e) {
+    final from = _swipeFrom;
+    final at = _swipeAt;
+    _swipeFrom = null;
+    if (from == null || at == null) return;
+    final travelled = (e.position - from).distance;
+    final took = e.timeStamp - at;
+    if (travelled > 80 && took < const Duration(milliseconds: 600)) {
+      handleRoll();
+    }
   }
 
   Future<void> _openStyleSheet() {
@@ -152,7 +175,19 @@ class RouletteState extends State<Roulette> {
               height: size.height * 0.42,
               child: _settings.style == RollStyle.reel
                   ? _reel(palette)
-                  : _wheel(palette, scheme),
+                  // Swipe-to-spin is read from the raw touch: the wheel
+                  // package's own fling detection missed some quick swipes.
+                  : Listener(
+                      // The whole wheel area, not just the disc, so a swipe
+                      // that starts just off the rim still counts.
+                      behavior: HitTestBehavior.opaque,
+                      onPointerDown: (e) {
+                        _swipeFrom = e.position;
+                        _swipeAt = e.timeStamp;
+                      },
+                      onPointerUp: _onWheelPointerUp,
+                      child: _wheel(palette, scheme),
+                    ),
             ),
             const SizedBox(height: 24),
             AnimatedSwitcher(
@@ -285,7 +320,6 @@ class RouletteState extends State<Roulette> {
       ],
       onAnimationStart: _onSpinStart,
       onAnimationEnd: _onSpinEnd,
-      onFling: handleRoll,
     );
   }
 
